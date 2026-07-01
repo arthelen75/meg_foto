@@ -150,7 +150,7 @@
             </div>
             <div class="flex items-start gap-2">
               <i data-lucide="check" class="w-4 h-4 text-amber-400 shrink-0 mt-0.5"></i>
-              <span class="text-xs text-neutral-300"><strong>Гарантии:</strong> Фиксируем стоимость и сроки в простом электронном договоре.</span>
+              <span class="text-xs text-neutral-300"><strong>Гарантии:</strong> Фиксируем стоимость и сроки.</span>
             </div>
           </div>
 
@@ -260,12 +260,12 @@
         <h2 class="text-xl font-extrabold text-white mb-1">Вход в кабинет</h2>
         <p class="text-xs text-neutral-400 mb-6">Введите пароль для редактирования портфолио, изменения категорий, тарифов и контактов.</p>
         <form onsubmit="adminLogin(event)" class="space-y-4">
-          <div>
+          <div class="space-y-3">
+            <input id="admin-email-input" type="email" required placeholder="Email администратора" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-4 py-2.5 text-xs text-center text-white focus:outline-none">
             <input id="admin-password-input" type="password" required placeholder="Пароль администратора" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-4 py-2.5 text-xs text-center text-white focus:outline-none">
             <p id="admin-login-error" class="text-xs text-red-400 mt-2 hidden"></p>
-            <p class="text-[10px] text-neutral-500 mt-2">Пароль по умолчанию: <span class="text-amber-400 font-bold">admin</span></p>
           </div>
-          <button type="submit" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold rounded-xl text-xs transition-all">Войти в систему</button>
+          <button id="admin-login-submit-btn" type="submit" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold rounded-xl text-xs transition-all">Войти в систему</button>
         </form>
       </div>
 
@@ -289,13 +289,13 @@
         <!-- Вкладки личного кабинета -->
         <div class="flex border-b border-neutral-850 overflow-x-auto scrollbar-none gap-2 -mx-4 px-4 sm:mx-0 sm:px-0">
           <button onclick="switchAdminTab('categories')" id="admin-tab-btn-categories" class="px-4 py-3 text-xs sm:text-sm font-bold whitespace-nowrap border-b-2 border-amber-500 text-amber-400 transition-all focus:outline-none flex items-center gap-2">
-            <i data-lucide="sliders" class="w-4 h-4"></i> Управление категориями
+            <i data-lucide="sliders" class="w-4 h-4"></i> Категории
           </button>
           <button onclick="switchAdminTab('packages')" id="admin-tab-btn-packages" class="px-4 py-3 text-xs sm:text-sm font-bold whitespace-nowrap border-b-2 border-transparent text-neutral-400 hover:text-white transition-all focus:outline-none flex items-center gap-2">
-            <i data-lucide="award" class="w-4 h-4"></i> Управление тарифами
+            <i data-lucide="award" class="w-4 h-4"></i> Тарифы
           </button>
           <button onclick="switchAdminTab('photos')" id="admin-tab-btn-photos" class="px-4 py-3 text-xs sm:text-sm font-bold whitespace-nowrap border-b-2 border-transparent text-neutral-400 hover:text-white transition-all focus:outline-none flex items-center gap-2">
-            <i data-lucide="image" class="w-4 h-4"></i> Управление фотографиями
+            <i data-lucide="image" class="w-4 h-4"></i> Галерея
           </button>
           <button onclick="switchAdminTab('profile')" id="admin-tab-btn-profile" class="px-4 py-3 text-xs sm:text-sm font-bold whitespace-nowrap border-b-2 border-transparent text-neutral-400 hover:text-white transition-all focus:outline-none flex items-center gap-2">
             <i data-lucide="user" class="w-4 h-4"></i> О себе
@@ -663,7 +663,7 @@
   <script type="module">
     // Импорт необходимых модулей Firebase SDK
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
-    import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+    import { getAuth, signInAnonymously, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
     import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, onSnapshot, addDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
     // --- ДЕФОЛТНЫЕ ДАННЫЕ ДЛЯ ИНИЦИАЛИЗАЦИИ БАЗЫ ---
@@ -767,13 +767,12 @@
     document.getElementById('current-year').innerText = new Date().getFullYear();
 
     // --- AUTH ИНИЦИАЛИЗАЦИЯ (ПРАВИЛО 3) ---
+    // Анонимный вход нужен, чтобы обычные посетители сайта могли читать
+    // публичные данные (фото, тарифы, профиль) из Firestore.
+    // Вход в АДМИНКУ выполняется отдельно через signInWithEmailAndPassword (см. adminLogin()).
     const initAuth = async () => {
       try {
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-          await signInWithCustomToken(auth, __initial_auth_token);
-        } else {
-          await signInAnonymously(auth);
-        }
+        await signInAnonymously(auth);
       } catch (err) {
         console.error("Ошибка авторизации:", err);
         showToast("Авторизация не удалась. Настройте Anonymous в Firebase!", "error");
@@ -1438,30 +1437,53 @@
       document.getElementById('input-msg').value = `Здравствуйте, Елена! Хочу записаться на пакет услуг "${packageName}". Пожалуйста, свяжитесь со мной.`;
     }
 
-    function adminLogin(event) {
+    async function adminLogin(event) {
       event.preventDefault();
+      const email = document.getElementById('admin-email-input').value.trim();
       const password = document.getElementById('admin-password-input').value;
       const errorText = document.getElementById('admin-login-error');
+      const submitBtn = document.getElementById('admin-login-submit-btn');
 
-      if (password === "admin") {
+      errorText.classList.add('hidden');
+      submitBtn.disabled = true;
+      submitBtn.innerText = "Проверяем...";
+
+      try {
+        // Реальная проверка учетных данных через Firebase Authentication
+        await signInWithEmailAndPassword(auth, email, password);
+
         isAdminAuthenticated = true;
-        errorText.classList.add('hidden');
         document.getElementById('admin-auth-card').classList.add('hidden');
         document.getElementById('admin-dashboard').classList.remove('hidden');
+        document.getElementById('admin-password-input').value = '';
         showToast("Успешный вход в систему!", "success");
         switchAdminTab('categories');
         renderAll();
-      } else {
-        errorText.innerText = "Неверный пароль. Попробуйте 'admin'";
+      } catch (err) {
+        console.error("Ошибка входа в админку:", err);
+        errorText.innerText = "Неверный email или пароль";
         errorText.classList.remove('hidden');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Войти в систему";
       }
     }
 
-    function adminLogout() {
+    async function adminLogout() {
       isAdminAuthenticated = false;
       document.getElementById('admin-password-input').value = '';
       document.getElementById('admin-auth-card').classList.remove('hidden');
       document.getElementById('admin-dashboard').classList.add('hidden');
+
+      try {
+        // Выходим из аккаунта администратора и возвращаемся к анонимной сессии,
+        // чтобы публичные данные сайта продолжали загружаться для посетителей.
+        await signOut(auth);
+        await signInAnonymously(auth);
+      } catch (err) {
+        console.error("Ошибка при выходе из системы:", err);
+      }
+
       showToast("Вы вышли из системы управления");
       renderAll();
     }
