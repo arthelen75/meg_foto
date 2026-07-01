@@ -1547,7 +1547,7 @@
             })
           }).then(res => {
             if (!res.ok) 
-              showToast("Не удалось удалить заявку", "error");
+              showToast("Telegram API вернул ошибку", "error");
               throw new Error("Telegram API вернул ошибку");
           })
         );
