@@ -8,6 +8,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Подключение иконок Lucide -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Подключение EmailJS для отправки заявок на почту прямо из браузера -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -288,7 +290,11 @@
 
         <!-- Вкладки личного кабинета -->
         <div class="flex border-b border-neutral-850 overflow-x-auto scrollbar-none gap-2 -mx-4 px-4 sm:mx-0 sm:px-0">
-          <button onclick="switchAdminTab('categories')" id="admin-tab-btn-categories" class="px-4 py-3 text-xs sm:text-sm font-bold whitespace-nowrap border-b-2 border-amber-500 text-amber-400 transition-all focus:outline-none flex items-center gap-2">
+          <button onclick="switchAdminTab('requests')" id="admin-tab-btn-requests" class="px-4 py-3 text-xs sm:text-sm font-bold whitespace-nowrap border-b-2 border-amber-500 text-amber-400 transition-all focus:outline-none flex items-center gap-2">
+            <i data-lucide="inbox" class="w-4 h-4"></i> Заявки
+            <span id="requests-unread-badge" class="hidden ml-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[9px] font-extrabold items-center justify-center">0</span>
+          </button>
+          <button onclick="switchAdminTab('categories')" id="admin-tab-btn-categories" class="px-4 py-3 text-xs sm:text-sm font-bold whitespace-nowrap border-b-2 border-transparent text-neutral-400 hover:text-white transition-all focus:outline-none flex items-center gap-2">
             <i data-lucide="sliders" class="w-4 h-4"></i> Категории
           </button>
           <button onclick="switchAdminTab('packages')" id="admin-tab-btn-packages" class="px-4 py-3 text-xs sm:text-sm font-bold whitespace-nowrap border-b-2 border-transparent text-neutral-400 hover:text-white transition-all focus:outline-none flex items-center gap-2">
@@ -302,8 +308,23 @@
           </button>
         </div>
 
+        <!-- ВКЛАДКА 0: ЗАЯВКИ ОТ КЛИЕНТОВ -->
+        <div id="admin-panel-requests" class="admin-pane-content space-y-4">
+          <div class="bg-neutral-900 border border-neutral-850 rounded-xl p-5 space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="inbox" class="w-4 h-4 text-amber-400"></i> Заявки с сайта
+              </h3>
+              <span class="text-[10px] text-neutral-500">Обновляется в реальном времени</span>
+            </div>
+            <div id="admin-requests-list" class="space-y-3">
+              <!-- Рендерится динамически -->
+            </div>
+          </div>
+        </div>
+
         <!-- ВКЛАДКА 1: УПРАВЛЕНИЕ КАТЕГОРИЯМИ -->
-        <div id="admin-panel-categories" class="admin-pane-content space-y-6">
+        <div id="admin-panel-categories" class="admin-pane-content space-y-6 hidden">
           <div class="bg-neutral-900 border border-neutral-850 rounded-xl p-5 space-y-4">
             <h3 class="text-sm font-bold text-white flex items-center gap-2">
               <i data-lucide="folder-plus" class="w-4 h-4 text-amber-400"></i> Создать или удалить Категории
@@ -671,9 +692,9 @@
       name: "Елена Мартынова",
       title: "Художественная & Портретная Фотография",
       bio: "Привет! Я Лена, и я помогаю людям увидеть свою настоящую, глубокую и кинематографичную красоту через объектив камеры.",
-      aboutImage: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=800",
+      aboutImage: "https://i.ibb.co/5xYXfGHR/1.jpg",
       email: "arthelen75@gmail.com",
-      phone: "+7 (916) 123-45-67",
+      phone: "+7 (912) 854-96-63",
       telegram: "arthelen_photo",
       instagram: "helen.martynova.ph",
       pricesLabel: "Тарифы",
@@ -703,6 +724,29 @@
     ];
 
     const DEFAULT_CATEGORIES = ["Все", "Портреты", "Пейзажи", "Студийная", "Love Story"];
+
+    // --- НАСТРОЙКИ ДОСТАВКИ ЗАЯВОК (TELEGRAM + EMAIL) ---
+    // Заполните эти значения своими данными, чтобы заявки с сайта дублировались
+    // в Telegram и на почту. База данных (Firestore) уже настроена и работает
+    // без дополнительных действий — заявки в любом случае попадают в админ-панель.
+    const TELEGRAM_CONFIG = {
+      // 1. Напишите @BotFather в Telegram, команда /newbot, скопируйте токен вида 123456:ABC-DEF...
+      botToken: "8834906556:AAFkQjLUPY-hv-TgaSIo0olYP1RLR90p884",
+      // 2. Напишите вашему новому боту любое сообщение, затем откройте в браузере:
+      //    https://api.telegram.org/bot<ВАШ_ТОКЕН>/getUpdates
+      //    и найдите там "chat":{"id": ЧИСЛО} — это и есть chatId
+      chatId: "276991041"
+    };
+
+    const EMAILJS_CONFIG = {
+      // Зарегистрируйтесь на https://www.emailjs.com (бесплатный тариф),
+      // подключите свою почту как "Email Service" и создайте "Email Template".
+      publicKey: "YOUR_EMAILJS_PUBLIC_KEY",
+      serviceId: "YOUR_EMAILJS_SERVICE_ID",
+      templateId: "YOUR_EMAILJS_TEMPLATE_ID",
+      // Куда именно слать письма (обычно совпадает с полем "To Email" в шаблоне EmailJS)
+      toEmail: "arthelen75@gmail.com"
+    };
 
     const DEFAULT_PACKAGES = [
       {
@@ -751,14 +795,20 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // Инициализация EmailJS (SDK подключен в <head> как обычный глобальный скрипт)
+    if (window.emailjs && EMAILJS_CONFIG.publicKey !== "YOUR_EMAILJS_PUBLIC_KEY") {
+      window.emailjs.init({ publicKey: EMAILJS_CONFIG.publicKey });
+    }
+
     // --- ЛОКАЛЬНОЕ СОСТОЯНИЕ (РЕАКТИВНОЕ) ---
     let photographer = { ...DEFAULT_INFO };
     let photos = [];
     let categories = [ ...DEFAULT_CATEGORIES ];
     let packages = [];
+    let requests = [];
     let activeCategory = "Все";
     let activeTab = "gallery";
-    let activeAdminTab = "categories";
+    let activeAdminTab = "requests";
     let isAdminAuthenticated = false;
     let pendingDeletePhotoId = null;
     let currentUser = null;
@@ -821,7 +871,7 @@
     }
 
     // --- РЕАЛТАЙМ СЛУШАТЕЛИ FIRESTORE (ПРАВИЛО 2) ---
-    let unsubscribeConfig, unsubscribePhotos, unsubscribePackages;
+    let unsubscribeConfig, unsubscribePhotos, unsubscribePackages, unsubscribeRequests;
 
     function setupRealtimeListeners() {
       if (!currentUser) return;
@@ -884,6 +934,26 @@
         console.error("Ошибка потока тарифов:", error);
         if (error.code === 'permission-denied') {
           showToast("Ошибка чтения тарифов: недостаточно прав (Rules: allow read, write: if true).", "error");
+        }
+      });
+
+      // Слушатель заявок от клиентов (видно только в админ-панели, но читаем всегда,
+      // чтобы значок непрочитанных заявок был актуален сразу после входа)
+      const requestsRef = collection(db, 'artifacts', appId, 'public', 'data', 'requests');
+      unsubscribeRequests = onSnapshot(requestsRef, (querySnap) => {
+        const tempRequests = [];
+        querySnap.forEach(docSnap => {
+          tempRequests.push({ id: docSnap.id, ...docSnap.data() });
+        });
+        requests = tempRequests.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+        if (isAdminAuthenticated) {
+          renderAdminRequests();
+          updateRequestsBadge();
+        }
+      }, (error) => {
+        console.error("Ошибка потока заявок:", error);
+        if (error.code === 'permission-denied') {
+          showToast("Ошибка чтения заявок: недостаточно прав (Rules: allow read, write: if true).", "error");
         }
       });
     }
@@ -953,6 +1023,8 @@
         renderAdminCategories();
         renderAdminPhotosManager();
         renderAdminPackages();
+        renderAdminRequests();
+        updateRequestsBadge();
       }
       lucide.createIcons();
     }
@@ -1415,17 +1487,105 @@
       document.getElementById('lightbox').classList.add('hidden');
     }
 
-    function submitForm(event) {
+    async function submitForm(event) {
       event.preventDefault();
-      document.getElementById('booking-form').classList.add('hidden');
-      document.getElementById('form-success-message').classList.remove('hidden');
-      showToast("Заявка успешно отправлена!", "success");
+
+      const form = document.getElementById('booking-form');
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const name = document.getElementById('input-name').value.trim();
+      const contact = document.getElementById('input-contact').value.trim();
+      const category = document.getElementById('input-category').value;
+      const message = document.getElementById('input-msg').value.trim();
+
+      if (!name || !contact) {
+        showToast("Заполните имя и контакт для связи", "error");
+        return;
+      }
+
+      const originalBtnText = submitBtn.innerText;
+      submitBtn.disabled = true;
+      submitBtn.innerText = "Отправляем...";
+
+      const requestData = {
+        name,
+        contact,
+        category,
+        message,
+        status: "new",
+        createdAt: new Date().toISOString()
+      };
+
+      // 1. Сохраняем заявку в Firestore — это основной источник данных для админ-панели
+      let savedToDb = false;
+      try {
+        const requestsRef = collection(db, 'artifacts', appId, 'public', 'data', 'requests');
+        await addDoc(requestsRef, requestData);
+        savedToDb = true;
+      } catch (error) {
+        console.error("Ошибка сохранения заявки в базу:", error);
+      }
+
+      // 2. Параллельно дублируем заявку в Telegram и на почту.
+      // Если эти каналы не настроены (оставлены значения по умолчанию) — просто пропускаем их.
+      const notifyTasks = [];
+
+      if (TELEGRAM_CONFIG.botToken !== "8834906556:AAFkQjLUPY-hv-TgaSIo0olYP1RLR90p884" && TELEGRAM_CONFIG.chatId !== "276991041") {
+        const tgText =
+          `📸 Новая заявка с сайта!\n\n` +
+          `Имя: ${name}\n` +
+          `Контакт: ${contact}\n` +
+          `Тип съемки: ${category}\n` +
+          `Сообщение: ${message || '—'}`;
+
+        notifyTasks.push(
+          fetch(`https://api.telegram.org/bot${TELEGRAM_CONFIG.botToken}/sendMessage`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              chat_id: TELEGRAM_CONFIG.chatId,
+              text: tgText
+            })
+          }).then(res => {
+            if (!res.ok) throw new Error("Telegram API вернул ошибку");
+          })
+        );
+      }
+
+      if (window.emailjs && EMAILJS_CONFIG.publicKey !== "YOUR_EMAILJS_PUBLIC_KEY") {
+        notifyTasks.push(
+          window.emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
+            to_email: EMAILJS_CONFIG.toEmail,
+            from_name: name,
+            contact: contact,
+            category: category,
+            message: message || '—'
+          })
+        );
+      }
+
+      const results = await Promise.allSettled(notifyTasks);
+      const hasNotifyFailures = results.some(r => r.status === "rejected");
+      if (hasNotifyFailures) {
+        console.warn("Часть каналов уведомлений (Telegram/Email) не сработала:", results);
+      }
+
+      submitBtn.disabled = false;
+      submitBtn.innerText = originalBtnText;
+
+      if (savedToDb) {
+        form.classList.add('hidden');
+        document.getElementById('form-success-message').classList.remove('hidden');
+        showToast("Заявка успешно отправлена!", "success");
+      } else {
+        showToast("Не удалось отправить заявку. Попробуйте еще раз или напишите напрямую.", "error");
+        return;
+      }
 
       setTimeout(() => {
         document.getElementById('input-name').value = '';
         document.getElementById('input-contact').value = '';
         document.getElementById('input-msg').value = '';
-        document.getElementById('booking-form').classList.remove('hidden');
+        form.classList.remove('hidden');
         document.getElementById('form-success-message').classList.add('hidden');
       }, 5000);
     }
@@ -1457,7 +1617,7 @@
         document.getElementById('admin-dashboard').classList.remove('hidden');
         document.getElementById('admin-password-input').value = '';
         showToast("Успешный вход в систему!", "success");
-        switchAdminTab('categories');
+        switchAdminTab('requests');
         renderAll();
       } catch (err) {
         console.error("Ошибка входа в админку:", err);
@@ -1698,6 +1858,111 @@
       lucide.createIcons();
     }
 
+    // --- ЗАЯВКИ ОТ КЛИЕНТОВ (АДМИН-ПАНЕЛЬ) ---
+    function updateRequestsBadge() {
+      const badge = document.getElementById('requests-unread-badge');
+      if (!badge) return;
+      const unreadCount = requests.filter(r => r.status === 'new').length;
+      if (unreadCount > 0) {
+        badge.innerText = unreadCount > 99 ? '99+' : String(unreadCount);
+        badge.classList.remove('hidden');
+        badge.classList.add('flex');
+      } else {
+        badge.classList.add('hidden');
+        badge.classList.remove('flex');
+      }
+    }
+
+    function formatRequestDate(isoString) {
+      if (!isoString) return '';
+      try {
+        return new Date(isoString).toLocaleString('ru-RU', {
+          day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+      } catch (e) {
+        return isoString;
+      }
+    }
+
+    function requestStatusBadge(status) {
+      if (status === 'done') {
+        return `<span class="text-[9px] font-bold uppercase px-2 py-1 rounded-full bg-green-500/10 text-green-400 border border-green-500/20">Обработана</span>`;
+      }
+      if (status === 'in_progress') {
+        return `<span class="text-[9px] font-bold uppercase px-2 py-1 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">В работе</span>`;
+      }
+      return `<span class="text-[9px] font-bold uppercase px-2 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">Новая</span>`;
+    }
+
+    function renderAdminRequests() {
+      const container = document.getElementById('admin-requests-list');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (requests.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-10 bg-neutral-950 rounded-xl border border-dashed border-neutral-800">
+            <i data-lucide="inbox" class="w-6 h-6 text-neutral-700 mx-auto mb-2"></i>
+            <p class="text-xs text-neutral-500">Пока нет ни одной заявки</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      requests.forEach(req => {
+        const item = document.createElement('div');
+        item.className = "p-4 bg-neutral-950 border border-neutral-800 rounded-xl space-y-2.5";
+        item.innerHTML = `
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <h4 class="font-bold text-sm text-white truncate">${req.name || 'Без имени'}</h4>
+              <a href="tel:${req.contact}" class="text-xs text-amber-400 hover:underline break-all">${req.contact || ''}</a>
+            </div>
+            ${requestStatusBadge(req.status)}
+          </div>
+          ${req.category ? `<span class="inline-block text-[10px] text-neutral-400 bg-neutral-900 border border-neutral-800 rounded-lg px-2 py-1">${req.category}</span>` : ''}
+          ${req.message ? `<p class="text-xs text-neutral-300 leading-relaxed whitespace-pre-line">${req.message}</p>` : ''}
+          <div class="flex items-center justify-between pt-1.5 border-t border-neutral-900">
+            <span class="text-[10px] text-neutral-500">${formatRequestDate(req.createdAt)}</span>
+            <div class="flex gap-1.5">
+              ${req.status !== 'in_progress' ? `<button onclick="setRequestStatus('${req.id}', 'in_progress')" class="px-2.5 py-1.5 rounded-lg bg-neutral-900 hover:bg-neutral-850 border border-neutral-800 text-blue-400 text-[10px] font-bold transition-colors">В работу</button>` : ''}
+              ${req.status !== 'done' ? `<button onclick="setRequestStatus('${req.id}', 'done')" class="px-2.5 py-1.5 rounded-lg bg-neutral-900 hover:bg-neutral-850 border border-neutral-800 text-green-400 text-[10px] font-bold transition-colors">Готово</button>` : ''}
+              <button onclick="deleteRequest('${req.id}')" class="p-1.5 rounded-lg bg-red-950/40 hover:bg-red-900 border border-red-900/40 text-red-200 transition-colors">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+      lucide.createIcons();
+    }
+
+    async function setRequestStatus(id, status) {
+      if (!currentUser) return;
+      try {
+        const reqRef = doc(db, 'artifacts', appId, 'public', 'data', 'requests', id);
+        await updateDoc(reqRef, { status });
+        showToast(status === 'done' ? "Заявка отмечена как обработанная" : "Заявка взята в работу", "info");
+      } catch (error) {
+        console.error("Ошибка обновления статуса заявки:", error);
+        showToast("Не удалось обновить статус заявки", "error");
+      }
+    }
+
+    async function deleteRequest(id) {
+      if (!currentUser) return;
+      try {
+        const reqRef = doc(db, 'artifacts', appId, 'public', 'data', 'requests', id);
+        await deleteDoc(reqRef);
+        showToast("Заявка удалена", "info");
+      } catch (error) {
+        console.error("Ошибка удаления заявки:", error);
+        showToast("Не удалось удалить заявку", "error");
+      }
+    }
+
     // --- ЭКСПОРТ ДЛЯ ИНЛАЙН ОБРАБОТЧИКОВ ---
     window.navigateTo = navigateTo;
     window.submitForm = submitForm;
@@ -1723,6 +1988,8 @@
     window.addPhoto = addPhoto;
     window.editPackage = editPackage;
     window.saveProfile = saveProfile;
+    window.setRequestStatus = setRequestStatus;
+    window.deleteRequest = deleteRequest;
   </script>
 </body>
 </html>
