@@ -1529,7 +1529,7 @@
       // Если эти каналы не настроены (оставлены значения по умолчанию) — просто пропускаем их.
       const notifyTasks = [];
 
-      if (TELEGRAM_CONFIG.botToken !== "_8834906556:AAFkQjLUPY-hv-TgaSIo0olYP1RLR90p884" && TELEGRAM_CONFIG.chatId !== "_276991041") {
+      //if (TELEGRAM_CONFIG.botToken !== "!" && TELEGRAM_CONFIG.chatId !== "!") {
         const tgText =
           `📸 Новая заявка с сайта!\n\n` +
           `Имя: ${name}\n` +
@@ -1551,7 +1551,7 @@
               throw new Error("Telegram API вернул ошибку");
           })
         );
-      }
+      //}
 
       if (window.emailjs && EMAILJS_CONFIG.publicKey !== "YOUR_EMAILJS_PUBLIC_KEY") {
         notifyTasks.push(
