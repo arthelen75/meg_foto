@@ -1,0 +1,1706 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Елена Мартынова | Художественная фотография</title>
+  <!-- Подключение Tailwind CSS для современного дизайна -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Подключение иконок Lucide -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            neutral: {
+              850: '#1f1f1f',
+              950: '#080808',
+            }
+          },
+          animation: {
+            'spin-slow': 'spin 12s linear infinite',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Плавный скролл и скрытие стандартного скроллбара для горизонтального меню */
+    .scrollbar-none::-webkit-scrollbar {
+      display: none;
+    }
+    .scrollbar-none {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    /* Анимация плавного появления */
+    .fade-in {
+      animation: fadeIn 0.3s ease-out forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-neutral-950 text-neutral-100 font-sans pb-20 md:pb-0 overflow-x-hidden selection:bg-amber-500 selection:text-neutral-900">
+
+  <!-- --- УВЕДОМЛЕНИЯ (TOAST) --- -->
+  <div id="toast" class="fixed bottom-24 md:bottom-6 right-4 left-4 md:left-auto md:w-96 z-50 flex items-center gap-3 px-5 py-4 rounded-xl shadow-2xl transition-all duration-300 border border-amber-500 bg-neutral-900 text-amber-200 hidden">
+    <i data-lucide="sparkles" class="w-5 h-5 shrink-0 text-amber-400"></i>
+    <p id="toast-text" class="text-xs sm:text-sm font-medium leading-tight"></p>
+  </div>
+
+  <!-- --- ШАПКА САЙТА --- -->
+  <header class="sticky top-0 z-40 backdrop-blur-md bg-neutral-950/80 border-b border-neutral-900">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
+      <!-- Логотип -->
+      <button onclick="navigateTo('admin')" class="flex items-center gap-2.5 text-left focus:outline-none group" title="Личный кабинет">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-200 flex items-center justify-center text-neutral-950 font-bold shadow-md shadow-amber-500/15">
+          <i data-lucide="camera" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <span id="header-first-name" class="block font-bold text-sm sm:text-base leading-none tracking-wider text-white uppercase group-hover:text-amber-400 transition-colors">Елена</span>
+          <span id="header-last-name" class="block font-light text-[9px] sm:text-[10px] tracking-widest text-neutral-400 uppercase mt-0.5">Мартынова</span>
+        </div>
+      </button>
+
+      <!-- Мобильная навигация в шапке -->
+      <div class="flex md:hidden items-center gap-1.5">
+        <button onclick="navigateTo('gallery')" id="mob-nav-gallery" class="p-2 text-amber-400 transition-colors focus:outline-none" title="Портфолио">
+          <i data-lucide="image" class="w-5 h-5"></i>
+        </button>
+        <button onclick="navigateTo('prices')" id="mob-nav-prices" class="p-2 text-neutral-400 hover:text-white transition-colors focus:outline-none" title="Цены">
+          <i data-lucide="compass" class="w-5 h-5"></i>
+        </button>
+        <button onclick="navigateTo('about')" id="mob-nav-about" class="p-2 text-neutral-400 hover:text-white transition-colors focus:outline-none" title="Обо мне">
+          <i data-lucide="book-open" class="w-5 h-5"></i>
+        </button>
+        <!-- Кнопка моментальной записи -->
+        <button onclick="navigateTo('contact')" id="mob-nav-contact" class="p-2 rounded-xl bg-amber-500 text-neutral-950 shadow-md shadow-amber-500/20 active:scale-95 transition-all ml-1" title="Запись">
+          <i data-lucide="calendar" class="w-4.5 h-4.5 stroke-[2.5]"></i>
+        </button>
+      </div>
+
+      <!-- Десктопная навигация -->
+      <nav class="hidden md:flex items-center gap-6 lg:gap-8">
+        <button onclick="navigateTo('gallery')" id="nav-gallery" class="text-xs font-semibold tracking-wider uppercase transition-colors text-amber-400">Портфолио</button>
+        <button onclick="navigateTo('prices')" id="nav-prices" class="text-xs font-semibold tracking-wider uppercase transition-colors text-neutral-300 hover:text-amber-400">Цены</button>
+        <button onclick="navigateTo('about')" id="nav-about" class="text-xs font-semibold tracking-wider uppercase transition-colors text-neutral-300 hover:text-amber-400">Обо мне</button>
+        <button onclick="navigateTo('contact')" id="nav-contact" class="text-xs font-semibold tracking-wider uppercase transition-colors text-neutral-300 hover:text-amber-400">Запись</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- --- ГЛАВНЫЙ КОНТЕНТ --- -->
+  <main class="max-w-5xl mx-auto px-4 py-6 md:py-10">
+
+    <!-- ПОРТФОЛИО -->
+    <section id="tab-gallery" class="tab-content space-y-8 fade-in">
+      <div id="categories-filter-container" class="flex gap-2 overflow-x-auto pb-3 scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
+        <!-- Рендерится динамически -->
+      </div>
+
+      <div id="photos-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Рендерится динамически -->
+      </div>
+    </section>
+
+    <!-- ЦЕНЫ И УСЛУГИ -->
+    <section id="tab-prices" class="tab-content space-y-10 hidden fade-in">
+      <div id="prices-header-container" class="text-center max-w-xl mx-auto">
+        <span id="prices-label" class="text-xs font-bold text-amber-400 uppercase tracking-widest">Тарифы</span>
+        <h2 id="prices-title" class="text-3xl font-extrabold text-white mt-1">Стоимость фотосессий</h2>
+        <p id="prices-desc" class="text-sm text-neutral-400 mt-2">Все цены прозрачны. Никаких скрытых доплат. Аренда фотостудии обсуждается отдельно.</p>
+      </div>
+
+      <div id="packages-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Рендерится динамически -->
+      </div>
+    </section>
+
+    <!-- ОБО МНЕ -->
+    <section id="tab-about" class="tab-content py-2 hidden fade-in">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 items-center">
+        <!-- Фото автора -->
+        <div class="md:col-span-5 relative aspect-[3/4] md:aspect-[4/5] rounded-3xl overflow-hidden border border-neutral-850">
+          <img id="about-img" src="" alt="Елена Мартынова" class="w-full h-full object-cover">
+          <div class="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/20 to-transparent"></div>
+          <div class="absolute bottom-6 left-6 right-6">
+            <h3 id="about-name" class="text-xl font-bold text-white">Елена Мартынова</h3>
+            <p id="about-title" class="text-amber-400 text-xs tracking-wider uppercase mt-1">Художественный фотограф</p>
+          </div>
+        </div>
+
+        <!-- Описание -->
+        <div class="md:col-span-7 space-y-5">
+          <span class="text-xs font-bold text-amber-400 tracking-widest uppercase">О фотографе</span>
+          <h2 class="text-3xl font-extrabold text-white tracking-tight">Создаю кадры, которые хочется пересматривать</h2>
+          <p id="about-bio" class="text-neutral-300 text-sm leading-relaxed"></p>
+          
+          <div class="space-y-3.5 pt-2">
+            <div class="flex items-start gap-2">
+              <i data-lucide="check" class="w-4 h-4 text-amber-400 shrink-0 mt-0.5"></i>
+              <span class="text-xs text-neutral-300"><strong>Опыт работы:</strong> Более 8 лет съемок в различных условиях освещения.</span>
+            </div>
+            <div class="flex items-start gap-2">
+              <i data-lucide="check" class="w-4 h-4 text-amber-400 shrink-0 mt-0.5"></i>
+              <span class="text-xs text-neutral-300"><strong>Качество:</strong> Полнокадровая профессиональная техника Sony.</span>
+            </div>
+            <div class="flex items-start gap-2">
+              <i data-lucide="check" class="w-4 h-4 text-amber-400 shrink-0 mt-0.5"></i>
+              <span class="text-xs text-neutral-300"><strong>Гарантии:</strong> Фиксируем стоимость и сроки в простом электронном договоре.</span>
+            </div>
+          </div>
+
+          <div class="pt-4 flex flex-col sm:flex-row gap-3">
+            <button onclick="navigateTo('contact')" class="px-6 py-3 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold rounded-xl text-xs uppercase tracking-wider transition-all shadow-lg shadow-amber-500/10 text-center">Перейти к записи</button>
+            <button onclick="navigateTo('gallery')" class="px-6 py-3 bg-neutral-900 text-neutral-300 hover:text-white border border-neutral-800 hover:border-neutral-700 rounded-xl text-xs text-center transition-all">Посмотреть фотоработы</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ЗАПИСЬ / КОНТАКТЫ -->
+    <section id="tab-contact" class="tab-content py-2 space-y-6 hidden fade-in">
+      <div class="text-center max-w-lg mx-auto mb-4">
+        <span class="text-xs font-bold text-amber-400 uppercase tracking-widest">Обратная связь</span>
+        <h2 class="text-3xl font-extrabold text-white mt-1">Забронируйте ваш съемочный день</h2>
+        <p class="text-xs text-neutral-400 mt-2">Заполните простую форму, и я свяжусь с вами в течение двух часов для обсуждения всех идей.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <!-- Контакты слева -->
+        <div class="lg:col-span-5 space-y-4">
+          <div class="p-4 rounded-2xl bg-neutral-900 border border-neutral-850 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0">
+              <i data-lucide="mail" class="w-5 h-5"></i>
+            </div>
+            <div class="min-w-0">
+              <span class="block text-[10px] text-neutral-400 uppercase font-medium">Электронная почта</span>
+              <a id="contact-email" href="" class="text-xs sm:text-sm font-bold text-white truncate block hover:text-amber-400"></a>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-neutral-900 border border-neutral-850 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0">
+              <i data-lucide="phone" class="w-5 h-5"></i>
+            </div>
+            <div class="min-w-0">
+              <span class="block text-[10px] text-neutral-400 uppercase font-medium">Телефон / WhatsApp</span>
+              <a id="contact-phone" href="" class="text-xs sm:text-sm font-bold text-white block hover:text-amber-400"></a>
+            </div>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-neutral-900 border border-neutral-850 space-y-3">
+            <span class="text-xs text-neutral-400 block font-semibold mb-1">Где еще меня найти:</span>
+            <div class="grid grid-cols-2 gap-2">
+              <a id="contact-tg" href="" target="_blank" class="px-3 py-2 rounded-xl bg-neutral-950 hover:bg-neutral-850 border border-neutral-800 text-xs text-white font-bold flex items-center justify-center gap-2 transition-all">
+                <i data-lucide="send" class="w-4 h-4 text-blue-400"></i> Telegram
+              </a>
+              <a id="contact-ig" href="" target="_blank" class="px-3 py-2 rounded-xl bg-neutral-950 hover:bg-neutral-850 border border-neutral-800 text-xs text-white font-bold flex items-center justify-center gap-2 transition-all">
+                <i data-lucide="instagram" class="w-4 h-4 text-pink-500"></i> Instagram
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Форма записи справа -->
+        <div class="lg:col-span-7 bg-neutral-900 border border-neutral-850 rounded-3xl p-6 sm:p-8">
+          <div id="form-success-message" class="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6 text-center py-10 hidden">
+            <div class="w-12 h-12 rounded-full bg-amber-500 flex items-center justify-center text-neutral-950 mx-auto mb-3">
+              <i data-lucide="check" class="w-6 h-6 stroke-[3]"></i>
+            </div>
+            <h4 class="text-lg font-bold text-amber-400 mb-1">Заявка отправлена!</h4>
+            <p class="text-neutral-300 text-xs max-w-xs mx-auto leading-relaxed">Лена уже получила вашу заявку и скоро свяжется с вами для обсуждения съемочного дня.</p>
+          </div>
+
+          <form id="booking-form" onsubmit="submitForm(event)" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-[10px] text-neutral-400 font-bold mb-1.5 uppercase tracking-wider">Ваше Имя *</label>
+                <input id="input-name" type="text" required placeholder="Имя" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-4 py-3 text-xs text-white focus:outline-none transition-colors">
+              </div>
+              <div>
+                <label class="block text-[10px] text-neutral-400 font-bold mb-1.5 uppercase tracking-wider">Телефон / Telegram *</label>
+                <input id="input-contact" type="text" required placeholder="@username или +7..." class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-4 py-3 text-xs text-white focus:outline-none transition-colors">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[10px] text-neutral-400 font-bold mb-1.5 uppercase tracking-wider">Тип фотосессии</label>
+              <select id="input-category" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-4 py-3 text-xs text-white focus:outline-none transition-colors">
+                <option>Индивидуальная фотосессия</option>
+                <option>Студийная съемка / Арт</option>
+                <option>Пейзажи / Прогулка</option>
+                <option>Love Story</option>
+                <option>Контент для Telegram/Сайта</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-[10px] text-neutral-400 font-bold mb-1.5 uppercase tracking-wider">Ваши идеи, пожелания или референсы</label>
+              <textarea id="input-msg" rows="4" placeholder="Какую съемку вы хотите? Вы можете упомянуть конкретную понравившуюся работу из портфолио..." class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-4 py-3 text-xs text-white focus:outline-none transition-colors"></textarea>
+            </div>
+
+            <button type="submit" class="w-full py-3.5 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold rounded-xl transition-all shadow-md shadow-amber-500/10 uppercase tracking-widest text-xs">Отправить предложение Елене</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- АДМИН-ПАНЕЛЬ (УПРАВЛЕНИЕ) -->
+    <section id="tab-admin" class="tab-content py-2 max-w-3xl mx-auto hidden fade-in">
+      <!-- Вход -->
+      <div id="admin-auth-card" class="bg-neutral-900 border border-neutral-850 rounded-3xl p-6 sm:p-8 text-center max-w-sm mx-auto">
+        <div class="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-400 mx-auto mb-4">
+          <i data-lucide="lock" class="w-6 h-6"></i>
+        </div>
+        <h2 class="text-xl font-extrabold text-white mb-1">Вход в кабинет</h2>
+        <p class="text-xs text-neutral-400 mb-6">Введите пароль для редактирования портфолио, изменения категорий, тарифов и контактов.</p>
+        <form onsubmit="adminLogin(event)" class="space-y-4">
+          <div>
+            <input id="admin-password-input" type="password" required placeholder="Пароль администратора" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-4 py-2.5 text-xs text-center text-white focus:outline-none">
+            <p id="admin-login-error" class="text-xs text-red-400 mt-2 hidden"></p>
+            <p class="text-[10px] text-neutral-500 mt-2">Пароль по умолчанию: <span class="text-amber-400 font-bold">admin</span></p>
+          </div>
+          <button type="submit" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold rounded-xl text-xs transition-all">Войти в систему</button>
+        </form>
+      </div>
+
+      <!-- Сама Админка -->
+      <div id="admin-dashboard" class="space-y-6 hidden">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 bg-neutral-900 border border-neutral-850 rounded-xl">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-lg bg-green-500/10 flex items-center justify-center text-green-400">
+              <i data-lucide="unlock" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h2 class="font-bold text-sm text-white">Режим Управления сайтом</h2>
+              <span class="text-[10px] text-neutral-400">Все изменения применяются мгновенно</span>
+            </div>
+          </div>
+          <button onclick="adminLogout()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-950 text-neutral-400 border border-neutral-800 hover:text-white hover:border-neutral-700 text-[10px] font-bold transition-colors">
+            <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Выйти
+          </button>
+        </div>
+
+        <!-- Вкладки личного кабинета -->
+        <div class="flex border-b border-neutral-850 overflow-x-auto scrollbar-none gap-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+          <button onclick="switchAdminTab('categories')" id="admin-tab-btn-categories" class="px-4 py-3 text-xs sm:text-sm font-bold whitespace-nowrap border-b-2 border-amber-500 text-amber-400 transition-all focus:outline-none flex items-center gap-2">
+            <i data-lucide="sliders" class="w-4 h-4"></i> Управление категориями
+          </button>
+          <button onclick="switchAdminTab('packages')" id="admin-tab-btn-packages" class="px-4 py-3 text-xs sm:text-sm font-bold whitespace-nowrap border-b-2 border-transparent text-neutral-400 hover:text-white transition-all focus:outline-none flex items-center gap-2">
+            <i data-lucide="award" class="w-4 h-4"></i> Управление тарифами
+          </button>
+          <button onclick="switchAdminTab('photos')" id="admin-tab-btn-photos" class="px-4 py-3 text-xs sm:text-sm font-bold whitespace-nowrap border-b-2 border-transparent text-neutral-400 hover:text-white transition-all focus:outline-none flex items-center gap-2">
+            <i data-lucide="image" class="w-4 h-4"></i> Управление фотографиями
+          </button>
+          <button onclick="switchAdminTab('profile')" id="admin-tab-btn-profile" class="px-4 py-3 text-xs sm:text-sm font-bold whitespace-nowrap border-b-2 border-transparent text-neutral-400 hover:text-white transition-all focus:outline-none flex items-center gap-2">
+            <i data-lucide="user" class="w-4 h-4"></i> О себе
+          </button>
+        </div>
+
+        <!-- ВКЛАДКА 1: УПРАВЛЕНИЕ КАТЕГОРИЯМИ -->
+        <div id="admin-panel-categories" class="admin-pane-content space-y-6">
+          <div class="bg-neutral-900 border border-neutral-850 rounded-xl p-5 space-y-4">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              <i data-lucide="folder-plus" class="w-4 h-4 text-amber-400"></i> Создать или удалить Категории
+            </h3>
+            <form onsubmit="addCategory(event)" class="flex gap-2 items-end">
+              <div class="flex-1">
+                <label class="block text-[10px] text-neutral-400 font-bold mb-1">Новая категория</label>
+                <input id="admin-new-cat-name" type="text" required placeholder="Например: Свадебные" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+              </div>
+              <button type="submit" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold rounded-xl text-xs flex items-center gap-1 transition-all">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i> Создать
+              </button>
+            </form>
+
+            <div class="space-y-1.5">
+              <label class="block text-[10px] text-neutral-400 font-bold">Активные разделы портфолио:</label>
+              <div id="admin-categories-list" class="flex flex-wrap gap-2">
+                <!-- Рендерится динамически -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ВКЛАДКА 2: УПРАВЛЕНИЕ ТАРИФАМИ -->
+        <div id="admin-panel-packages" class="admin-pane-content space-y-6 hidden">
+          <!-- Редактирование заголовков и описания тарифов -->
+          <div class="bg-neutral-900 border border-neutral-850 rounded-xl p-5 space-y-4">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              <i data-lucide="edit-3" class="w-4.5 h-4.5 text-amber-400"></i> Основные тексты раздела «Тарифы»
+            </h3>
+            <form onsubmit="savePricesHeaders(event)" class="space-y-4">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-[10px] text-neutral-400 font-bold mb-1">Малый заголовок (например: Тарифы)</label>
+                  <input id="admin-prices-label" type="text" placeholder="Можно оставить пустым" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-[10px] text-neutral-400 font-bold mb-1">Главный заголовок фотосессий</label>
+                  <input id="admin-prices-title" type="text" placeholder="Можно оставить пустым" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                </div>
+              </div>
+              <div>
+                <label class="block text-[10px] text-neutral-400 font-bold mb-1">Описание / Условия аренды студии</label>
+                <textarea id="admin-prices-desc" rows="2" placeholder="Можно оставить пустым" class="w-full bg-neutral-950 border border-neutral-850 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"></textarea>
+              </div>
+              <div class="flex justify-end">
+                <button type="submit" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold rounded-xl text-xs flex items-center gap-1.5 transition-all">
+                  <i data-lucide="check" class="w-3.5 h-3.5"></i> Сохранить заголовки тарифов
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Редактирование конкретных карточек пакетов -->
+          <div class="bg-neutral-900 border border-neutral-850 rounded-xl p-5 space-y-4">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              <i data-lucide="settings-2" class="w-4.5 h-4.5 text-amber-400"></i> Управление тарифами (пакетами)
+            </h3>
+            <form onsubmit="savePackage(event)" class="space-y-3">
+              <input type="hidden" id="admin-pkg-id">
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label class="block text-[10px] text-neutral-400 font-bold mb-1">Название тарифа</label>
+                  <input id="admin-pkg-title" type="text" required placeholder="Например: Экспресс" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-[10px] text-neutral-400 font-bold mb-1">Длительность</label>
+                  <input id="admin-pkg-duration" type="text" required placeholder="Например: 1.5 часа" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-[10px] text-neutral-400 font-bold mb-1">Стоимость</label>
+                  <input id="admin-pkg-price" type="text" required placeholder="Например: 9 500 ₽" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                </div>
+              </div>
+              <div>
+                <label class="block text-[10px] text-neutral-400 font-bold mb-1">Особенности тарифа (каждая строчка — новый пункт списка)</label>
+                <textarea id="admin-pkg-features" rows="3" required placeholder="Консультация в Telegram&#10;15 фото в авторской ретуши&#10;Все удачные кадры в цветокоррекции" class="w-full bg-neutral-950 border border-neutral-850 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"></textarea>
+              </div>
+              <div class="flex items-center gap-2">
+                <input id="admin-pkg-popular" type="checkbox" class="w-4 h-4 rounded border-neutral-800 bg-neutral-950 text-amber-500 focus:ring-amber-500">
+                <label for="admin-pkg-popular" class="text-xs text-neutral-300 cursor-pointer select-none">Сделать этот тариф «Популярным»</label>
+              </div>
+              <div class="flex justify-end gap-2">
+                <button type="button" onclick="clearPackageForm()" class="px-4 py-2 rounded-xl border border-neutral-800 text-xs text-neutral-400 hover:text-white transition-all">Сбросить</button>
+                <button type="submit" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold rounded-xl text-xs flex items-center gap-1.5 transition-all">
+                  <i data-lucide="check" class="w-3.5 h-3.5"></i> <span id="admin-pkg-submit-btn">Добавить / Сохранить</span>
+                </button>
+              </div>
+            </form>
+
+            <div class="space-y-1.5 pt-2">
+              <label class="block text-[10px] text-neutral-400 font-bold">Список активных тарифов:</label>
+              <div id="admin-packages-list" class="space-y-2 max-h-60 overflow-y-auto">
+                <!-- Рендерится динамически -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ВКЛАДКА 3: УПРАВЛЕНИЕ ФОТОГРАФИЯМИ -->
+        <div id="admin-panel-photos" class="admin-pane-content space-y-6 hidden">
+          <!-- Добавление нового фото -->
+          <div class="bg-neutral-900 border border-neutral-850 rounded-xl p-5 space-y-3.5">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="plus" class="w-4.5 h-4.5 text-amber-400"></i> Добавить фото в портфолио
+              </h3>
+              <button onclick="toggleHelper()" type="button" class="text-[10px] text-amber-400 hover:underline flex items-center gap-1">
+                <i data-lucide="info" class="w-3.5 h-3.5"></i> Google Фото и CORS?
+              </button>
+            </div>
+
+            <div id="cors-helper-box" class="p-4 rounded-xl bg-neutral-950 border border-amber-500/10 text-[11px] space-y-2 text-neutral-300 hidden">
+              <p class="font-bold text-amber-400">⚠️ Про CORS и стабильные ссылки:</p>
+              <p>Прямые ссылки Google Фото часто блокируются из-за CORS-политик Google. Рекомендуется использовать проверенные площадки для копирования адреса картинок:</p>
+              <ul class="list-disc list-inside space-y-1 font-semibold text-neutral-200">
+                <li>Загрузить фото в Telegra.ph и скопировать его URL</li>
+                <li>Скопировать прямую ссылку из любого Telegram-канала или ВК</li>
+                <li>Использовать бесплатные хостинги картинок типа Imgur</li>
+              </ul>
+            </div>
+
+            <form onsubmit="addPhoto(event)" class="space-y-3.5">
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div class="sm:col-span-2">
+                  <label class="block text-[10px] text-neutral-400 font-bold mb-1">Название снимка</label>
+                  <input id="admin-photo-title" type="text" required placeholder="Например: Розовый закат" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-[10px] text-neutral-400 font-bold mb-1">Категория</label>
+                  <select id="admin-photo-category" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                    <!-- Заполняется динамически -->
+                  </select>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-[10px] text-neutral-400 font-bold mb-1">Локация / Место съемки</label>
+                  <input id="admin-photo-location" type="text" placeholder="Например: Москва-Сити" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-[10px] text-neutral-400 font-bold mb-1">Ссылка на изображение (URL)</label>
+                  <input id="admin-photo-url" type="url" required placeholder="https://..." class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-[10px] text-neutral-400 font-bold mb-1">История кадра / Описание</label>
+                <textarea id="admin-photo-desc" rows="2" placeholder="Опишите атмосферу, свет, настроение съемки..." class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"></textarea>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <input id="admin-photo-featured" type="checkbox" class="w-4 h-4 rounded border-neutral-800 bg-neutral-950 text-amber-500 focus:ring-amber-500">
+                <label for="admin-photo-featured" class="text-xs text-neutral-300 cursor-pointer select-none">Поместить в «Избранное» (показать стикер "⭐ Топ")</label>
+              </div>
+
+              <button type="submit" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold rounded-xl transition-all flex items-center gap-1.5 text-xs ml-auto">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i> Добавить фото в галерею
+              </button>
+            </form>
+          </div>
+
+          <!-- Менеджер загруженных кадров -->
+          <div class="bg-neutral-900 border border-neutral-850 rounded-xl p-5 space-y-4">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              <i data-lucide="folder-open" class="w-4.5 h-4.5 text-amber-400"></i> Управление загруженными кадрами
+            </h3>
+            <div id="admin-photos-manager-list" class="space-y-2.5 max-h-[400px] overflow-y-auto pr-1">
+              <!-- Список рендерится динамически -->
+            </div>
+          </div>
+        </div>
+
+        <!-- ВКЛАДКА 4: НАСТРОЙКИ ПРОФИЛЯ / О СЕБЕ -->
+        <div id="admin-panel-profile" class="admin-pane-content space-y-6 hidden">
+          <div class="bg-neutral-900 border border-neutral-850 rounded-xl p-5">
+            <h3 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
+              <i data-lucide="user-check" class="w-4.5 h-4.5 text-amber-400"></i> Настройки профиля Елены
+            </h3>
+            <form onsubmit="saveProfile(event)" class="space-y-3.5">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-[10px] text-neutral-400 font-bold mb-1">ФИО автора</label>
+                  <input id="admin-prof-name" type="text" required class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-[10px] text-neutral-400 font-bold mb-1">Специализация / Слоган</label>
+                  <input id="admin-prof-title" type="text" required class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-[10px] text-neutral-400 font-bold mb-1">Текст "О себе" (Биография)</label>
+                <textarea id="admin-prof-bio" rows="4" required class="w-full bg-neutral-950 border border-neutral-850 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"></textarea>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-[10px] text-neutral-400 font-bold mb-1">Email</label>
+                  <input id="admin-prof-email" type="email" required class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-[10px] text-neutral-400 font-bold mb-1">Телефон / WhatsApp</label>
+                  <input id="admin-prof-phone" type="text" required class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label class="block text-[10px] text-neutral-400 font-bold mb-1">Telegram (username)</label>
+                  <input id="admin-prof-tg" type="text" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-[10px] text-neutral-400 font-bold mb-1">Instagram (username)</label>
+                  <input id="admin-prof-ig" type="text" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-[10px] text-neutral-400 font-bold mb-1">Аватар (ссылка на портрет)</label>
+                  <input id="admin-prof-avatar" type="url" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                </div>
+              </div>
+
+              <button type="submit" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold rounded-xl text-xs flex items-center gap-1.5 ml-auto">
+                <i data-lucide="check" class="w-3.5 h-3.5"></i> Сохранить изменения профиля
+              </button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- --- ДЕСКТОПНЫЙ ФУТЕР --- -->
+  <footer class="hidden md:block bg-neutral-950 border-t border-neutral-900 py-10 mt-16">
+    <div class="max-w-5xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-3 gap-8 items-center text-center sm:text-left">
+      <div>
+        <h4 id="footer-name" class="font-bold text-white text-sm uppercase tracking-wider">Елена Мартынова</h4>
+        <p class="text-[11px] text-neutral-500 mt-1">© <span id="current-year">2026</span> Портфолио Елены Мартыновой.</p>
+      </div>
+      <div class="flex justify-center gap-6 text-xs text-neutral-400">
+        <button onclick="navigateTo('gallery')" class="hover:text-amber-400 transition-colors">Портфолио</button>
+        <button onclick="navigateTo('prices')" class="hover:text-amber-400 transition-colors">Цены</button>
+        <button onclick="navigateTo('about')" class="hover:text-amber-400 transition-colors">О себе</button>
+      </div>
+      <div class="flex justify-center sm:justify-end gap-3">
+        <a id="footer-ig" href="" target="_blank" class="w-8 h-8 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-neutral-400 hover:text-white transition-colors">
+          <i data-lucide="instagram" class="w-4 h-4"></i>
+        </a>
+        <a id="footer-tg" href="" target="_blank" class="w-8 h-8 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-neutral-400 hover:text-blue-400 transition-colors">
+          <i data-lucide="send" class="w-4 h-4"></i>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- --- LIGHTBOX: УВЕЛИЧЕНИЕ ФОТО --- -->
+  <div id="lightbox" class="fixed inset-0 z-50 bg-neutral-950/98 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto hidden">
+    <button onclick="closeLightbox()" class="absolute top-6 right-6 p-2 rounded-full bg-neutral-900 text-neutral-400 hover:text-white border border-neutral-800 z-50 transition-colors">
+      <i data-lucide="x" class="w-6 h-6"></i>
+    </button>
+
+    <div class="max-w-2xl w-full my-auto flex flex-col items-center justify-center relative py-8">
+      <!-- Изображение -->
+      <div class="relative w-full aspect-[4/5] rounded-2xl overflow-hidden bg-neutral-900 border border-neutral-800 shadow-2xl">
+        <img id="lightbox-img" src="" alt="" class="w-full h-full object-cover">
+        <!-- Локация сверху -->
+        <div id="lightbox-location-container" class="absolute top-4 left-4 px-3 py-1.5 rounded-xl bg-neutral-950/80 backdrop-blur-md border border-neutral-850 text-xs text-neutral-300 flex items-center gap-1.5 hidden">
+          <i data-lucide="map-pin" class="w-4 h-4 text-amber-400"></i>
+          <span id="lightbox-location"></span>
+        </div>
+      </div>
+      
+      <!-- Текст под фото -->
+      <div class="w-full mt-5 text-center px-2 space-y-4">
+        <div>
+          <span id="lightbox-category" class="inline-block px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-semibold uppercase tracking-wider mb-2"></span>
+          <h3 id="lightbox-title" class="text-xl font-bold text-white"></h3>
+        </div>
+        <div id="lightbox-desc-box" class="p-4 rounded-xl bg-neutral-900/60 border border-neutral-850 text-xs sm:text-sm text-neutral-300 leading-relaxed max-w-lg mx-auto italic hidden"></div>
+
+        <!-- Кнопка "Хочу такую же фотосессию" -->
+        <button id="lightbox-cta-btn" class="w-full max-w-md py-3 bg-amber-500 hover:bg-amber-400 active:scale-95 text-neutral-950 font-bold rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 mx-auto shadow-lg shadow-amber-500/10">
+          <i data-lucide="heart" class="w-4 h-4 stroke-[2.5]"></i> Хочу такую же фотосессию!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- --- МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ ФОТОГРАФИИ --- -->
+  <div id="edit-photo-modal" class="fixed inset-0 z-50 bg-neutral-950/98 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto hidden">
+    <div class="bg-neutral-900 border border-neutral-850 rounded-3xl p-6 sm:p-8 max-w-lg w-full relative">
+      <button onclick="closeEditPhotoModal()" class="absolute top-4 right-4 p-1.5 rounded-full bg-neutral-950 text-neutral-400 hover:text-white border border-neutral-800 transition-colors">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+        <i data-lucide="edit-3" class="text-amber-400 w-5 h-5"></i> Редактировать снимок
+      </h3>
+      <form onsubmit="saveEditedPhoto(event)" class="space-y-4">
+        <input type="hidden" id="edit-photo-id">
+        <div>
+          <label class="block text-[10px] text-neutral-400 font-bold mb-1.5 uppercase tracking-wider">Название снимка *</label>
+          <input id="edit-photo-title" type="text" required class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-[10px] text-neutral-400 font-bold mb-1.5 uppercase tracking-wider">Категория</label>
+            <select id="edit-photo-category" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none">
+              <!-- Заполняется динамически -->
+            </select>
+          </div>
+          <div>
+            <label class="block text-[10px] text-neutral-400 font-bold mb-1.5 uppercase tracking-wider">Локация</label>
+            <input id="edit-photo-location" type="text" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none">
+          </div>
+        </div>
+        <div>
+          <label class="block text-[10px] text-neutral-400 font-bold mb-1.5 uppercase tracking-wider">Ссылка на фото (URL) *</label>
+          <input id="edit-photo-url" type="url" required class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-[10px] text-neutral-400 font-bold mb-1.5 uppercase tracking-wider">Описание / История кадра</label>
+          <textarea id="edit-photo-desc" rows="3" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none"></textarea>
+        </div>
+        <div class="flex items-center gap-2">
+          <input id="edit-photo-featured" type="checkbox" class="w-4 h-4 rounded border-neutral-800 bg-neutral-950 text-amber-500 focus:ring-amber-500">
+          <label for="edit-photo-featured" class="text-xs text-neutral-300 cursor-pointer select-none">Поместить в «Избранное» (показать стикер "⭐ Топ")</label>
+        </div>
+        <div class="flex justify-end gap-3 pt-2">
+          <button type="button" onclick="closeEditPhotoModal()" class="px-4 py-2 rounded-xl border border-neutral-800 hover:border-neutral-700 text-xs text-neutral-400 hover:text-white font-bold transition-all">Отмена</button>
+          <button type="submit" class="px-5 py-2 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold rounded-xl text-xs transition-all">Сохранить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- --- КАСТОМНОЕ ОКНО ПОДТВЕРЖДЕНИЯ УДАЛЕНИЯ --- -->
+  <div id="confirm-modal" class="fixed inset-0 z-50 bg-neutral-950/90 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-neutral-900 border border-neutral-850 rounded-3xl p-6 max-w-sm w-full text-center space-y-4">
+      <div class="w-12 h-12 rounded-full bg-red-500/10 text-red-400 flex items-center justify-center mx-auto">
+        <i data-lucide="trash-2" class="w-6 h-6"></i>
+      </div>
+      <div>
+        <h4 class="text-base font-bold text-white">Удалить этот снимок?</h4>
+        <p class="text-xs text-neutral-400 mt-1">Это действие необратимо. Фотография будет навсегда стерта из вашего портфолио.</p>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button onclick="closeConfirmModal()" class="flex-1 py-2.5 rounded-xl border border-neutral-800 text-xs font-bold text-neutral-400 hover:text-white transition-all">Отмена</button>
+        <button id="confirm-delete-btn" class="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold transition-all">Удалить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- --- ОБЛАЧНЫЙ ДВИЖОК И БИЗНЕС-ЛОГИКА НА FIRESTORE --- -->
+  <script type="module">
+    // Импорт необходимых модулей Firebase SDK
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+    import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, onSnapshot, addDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+
+    // --- ДЕФОЛТНЫЕ ДАННЫЕ ДЛЯ ИНИЦИАЛИЗАЦИИ БАЗЫ ---
+    const DEFAULT_INFO = {
+      name: "Елена Мартынова",
+      title: "Художественная & Портретная Фотография",
+      bio: "Привет! Я Лена, и я помогаю людям увидеть свою настоящую, глубокую и кинематографичную красоту через объектив камеры.",
+      aboutImage: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=800",
+      email: "arthelen75@gmail.com",
+      phone: "+7 (916) 123-45-67",
+      telegram: "arthelen_photo",
+      instagram: "helen.martynova.ph",
+      pricesLabel: "Тарифы",
+      pricesTitle: "Стоимость фотосессий",
+      pricesDesc: "Все цены прозрачны. Никаких скрытых доплат. Аренда фотостудии обсуждается отдельно."
+    };
+
+    const DEFAULT_PHOTOS = [
+      {
+        id: "1",
+        title: "В лучах заходящего солнца",
+        description: "Спонтанный кадр во время прогулки по старому городу. Поймали невероятный золотой свет.",
+        location: "Санкт-Петербург, крыши",
+        category: "Портреты",
+        url: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=1200",
+        featured: true
+      },
+      {
+        id: "2",
+        title: "Утренняя дымка",
+        description: "Проснулись в 4 утра, чтобы застать этот туман над озером.",
+        location: "Карелия, Ладожское озеро",
+        category: "Пейзажи",
+        url: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=1200",
+        featured: true
+      }
+    ];
+
+    const DEFAULT_CATEGORIES = ["Все", "Портреты", "Пейзажи", "Студийная", "Love Story"];
+
+    const DEFAULT_PACKAGES = [
+      {
+        id: "express",
+        title: "Экспресс",
+        price: "5 000 ₽",
+        duration: "30 минут",
+        features: [
+          "Консультация в Telegram",
+          "15 фото в авторской ретуши",
+          "Все удачные кадры в цветокоррекции"
+        ],
+        popular: false
+      },
+      {
+        id: "standard",
+        title: "Прогулка / Студия",
+        price: "9 500 ₽",
+        duration: "1.5 часа",
+        features: [
+          "Помощь с подбором образов и мудборда",
+          "40 фото в детальной ретуши",
+          "До 150 исходников в цветокоррекции"
+        ],
+        popular: true
+      }
+    ];
+
+    // --- CONFIG И ИНИЦИАЛИЗАЦИЯ FIREBASE ---
+    // Устанавливаем надежный плоский appId без двоеточий во избежание ошибок разграничения Firestore путей
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'meg-foto-portfolio';
+    const firebaseConfig = typeof __firebase_config !== 'undefined'
+      ? JSON.parse(__firebase_config)
+      : {
+          apiKey: "AIzaSyCVSdImccri-u1I100U8b4Lrl6aPLBNhcE",
+          authDomain: "meg-foto.firebaseapp.com",
+          databaseURL: "https://meg-foto-default-rtdb.firebaseio.com",
+          projectId: "meg-foto",
+          storageBucket: "meg-foto.firebasestorage.app",
+          messagingSenderId: "898846602662",
+          appId: "1:898846602662:web:87bc0a1db2ff294377cb67",
+          measurementId: "G-6BEYSMXV4T",
+        };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // --- ЛОКАЛЬНОЕ СОСТОЯНИЕ (РЕАКТИВНОЕ) ---
+    let photographer = { ...DEFAULT_INFO };
+    let photos = [];
+    let categories = [ ...DEFAULT_CATEGORIES ];
+    let packages = [];
+    let activeCategory = "Все";
+    let activeTab = "gallery";
+    let activeAdminTab = "categories";
+    let isAdminAuthenticated = false;
+    let pendingDeletePhotoId = null;
+    let currentUser = null;
+
+    // Инициализация года в футере
+    document.getElementById('current-year').innerText = new Date().getFullYear();
+
+    // --- AUTH ИНИЦИАЛИЗАЦИЯ (ПРАВИЛО 3) ---
+    const initAuth = async () => {
+      try {
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+      } catch (err) {
+        console.error("Ошибка авторизации:", err);
+        showToast("Авторизация не удалась. Настройте Anonymous в Firebase!", "error");
+      }
+    };
+    initAuth();
+
+    // Слушатель состояния авторизации
+    onAuthStateChanged(auth, (user) => {
+      currentUser = user;
+      if (user) {
+        setupRealtimeListeners();
+      }
+    });
+
+    // --- ИНИЦИАЛИЗАЦИЯ И СИДИНГ БАЗЫ ДАННЫХ (ПРАВИЛО 1) ---
+    async function seedDatabase() {
+      if (!currentUser) return;
+      try {
+        showToast("Облачная база пуста. Инициализируем стандартные данные...", "info");
+        
+        // 1. Создаем конфиг профиля и категорий
+        const configRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'photographer');
+        await setDoc(configRef, {
+          ...DEFAULT_INFO,
+          categories: DEFAULT_CATEGORIES
+        });
+
+        // 2. Создаем стандартные тарифы
+        for (const pkg of DEFAULT_PACKAGES) {
+          await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'packages', pkg.id), pkg);
+        }
+
+        // 3. Создаем базовые фотографии
+        for (const photo of DEFAULT_PHOTOS) {
+          await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'photos', photo.id), photo);
+        }
+        
+        showToast("Облачная база успешно заполнена!");
+      } catch (error) {
+        console.error("Ошибка инициализации базы:", error);
+        if (error.code === 'permission-denied') {
+          showToast("Запрещено правилами Firebase! Опубликуйте Rules: allow read, write: if true;", "error");
+        }
+      }
+    }
+
+    // --- РЕАЛТАЙМ СЛУШАТЕЛИ FIRESTORE (ПРАВИЛО 2) ---
+    let unsubscribeConfig, unsubscribePhotos, unsubscribePackages;
+
+    function setupRealtimeListeners() {
+      if (!currentUser) return;
+
+      // Слушатель настроек профиля и категорий
+      const configRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'photographer');
+      unsubscribeConfig = onSnapshot(configRef, (docSnap) => {
+        if (!docSnap.exists()) {
+          seedDatabase();
+          return;
+        }
+        const data = docSnap.data();
+        photographer = {
+          name: data.name || DEFAULT_INFO.name,
+          title: data.title || DEFAULT_INFO.title,
+          bio: data.bio || DEFAULT_INFO.bio,
+          aboutImage: data.aboutImage || DEFAULT_INFO.aboutImage,
+          email: data.email || DEFAULT_INFO.email,
+          phone: data.phone || DEFAULT_INFO.phone,
+          telegram: data.telegram || DEFAULT_INFO.telegram,
+          instagram: data.instagram || DEFAULT_INFO.instagram,
+          pricesLabel: data.pricesLabel !== undefined ? data.pricesLabel : DEFAULT_INFO.pricesLabel,
+          pricesTitle: data.pricesTitle !== undefined ? data.pricesTitle : DEFAULT_INFO.pricesTitle,
+          pricesDesc: data.pricesDesc !== undefined ? data.pricesDesc : DEFAULT_INFO.pricesDesc,
+        };
+        categories = data.categories || DEFAULT_CATEGORIES;
+
+        syncStaticData();
+        renderAll();
+      }, (error) => {
+        console.error("Ошибка потока конфига:", error);
+        if (error.code === 'permission-denied') {
+          showToast("Нет доступа! Откройте вкладку Rules в консоли Firebase и нажмите Publish.", "error");
+        }
+      });
+
+      // Слушатель фотографии
+      const photosRef = collection(db, 'artifacts', appId, 'public', 'data', 'photos');
+      unsubscribePhotos = onSnapshot(photosRef, (querySnap) => {
+        const tempPhotos = [];
+        querySnap.forEach(docSnap => {
+          tempPhotos.push({ id: docSnap.id, ...docSnap.data() });
+        });
+        photos = tempPhotos.sort((a, b) => b.id.localeCompare(a.id));
+        renderAll();
+      }, (error) => {
+        console.error("Ошибка потока фотографий:", error);
+      });
+
+      // Слушатель тарифов
+      const packagesRef = collection(db, 'artifacts', appId, 'public', 'data', 'packages');
+      unsubscribePackages = onSnapshot(packagesRef, (querySnap) => {
+        const tempPackages = [];
+        querySnap.forEach(docSnap => {
+          tempPackages.push({ id: docSnap.id, ...docSnap.data() });
+        });
+        packages = tempPackages;
+        renderAll();
+      }, (error) => {
+        console.error("Ошибка потока тарифов:", error);
+        if (error.code === 'permission-denied') {
+          showToast("Ошибка чтения тарифов: недостаточно прав (Rules: allow read, write: if true).", "error");
+        }
+      });
+    }
+
+    // --- ОБНОВЛЕНИЕ СТАТИЧЕСКИХ ДАННЫХ В ВЕРСТКЕ ---
+    function syncStaticData() {
+      const names = photographer.name.split(' ');
+      document.getElementById('header-first-name').innerText = names[0] || 'Елена';
+      document.getElementById('header-last-name').innerText = names.slice(1).join(' ') || 'Мартынова';
+      document.getElementById('footer-name').innerText = photographer.name;
+
+      document.getElementById('about-img').src = photographer.aboutImage;
+      document.getElementById('about-name').innerText = photographer.name;
+      document.getElementById('about-title').innerText = photographer.title;
+      document.getElementById('about-bio').innerText = photographer.bio;
+
+      document.getElementById('contact-email').innerText = photographer.email;
+      document.getElementById('contact-email').href = `mailto:${photographer.email}`;
+      document.getElementById('contact-phone').innerText = photographer.phone;
+      document.getElementById('contact-phone').href = `tel:${photographer.phone}`;
+
+      document.getElementById('contact-tg').href = `https://t.me/${photographer.telegram}`;
+      document.getElementById('contact-ig').href = `https://instagram.com/${photographer.instagram}`;
+      document.getElementById('footer-tg').href = `https://t.me/${photographer.telegram}`;
+      document.getElementById('footer-ig').href = `https://instagram.com/${photographer.instagram}`;
+
+      // Настройка заголовков тарифов
+      const labelEl = document.getElementById('prices-label');
+      labelEl.innerText = photographer.pricesLabel;
+      labelEl.classList.toggle('hidden', !photographer.pricesLabel);
+
+      const titleEl = document.getElementById('prices-title');
+      titleEl.innerText = photographer.pricesTitle;
+      titleEl.classList.toggle('hidden', !photographer.pricesTitle);
+
+      const descEl = document.getElementById('prices-desc');
+      descEl.innerText = photographer.pricesDesc;
+      descEl.classList.toggle('hidden', !photographer.pricesDesc);
+
+      const headerContainer = document.getElementById('prices-header-container');
+      if (headerContainer) {
+        const allHidden = !photographer.pricesLabel && !photographer.pricesTitle && !photographer.pricesDesc;
+        headerContainer.classList.toggle('hidden', allHidden);
+      }
+
+      // Поля ввода в Админ-панели
+      document.getElementById('admin-prof-name').value = photographer.name;
+      document.getElementById('admin-prof-title').value = photographer.title;
+      document.getElementById('admin-prof-bio').value = photographer.bio;
+      document.getElementById('admin-prof-email').value = photographer.email;
+      document.getElementById('admin-prof-phone').value = photographer.phone;
+      document.getElementById('admin-prof-tg').value = photographer.telegram;
+      document.getElementById('admin-prof-ig').value = photographer.instagram;
+      document.getElementById('admin-prof-avatar').value = photographer.aboutImage;
+
+      document.getElementById('admin-prices-label').value = photographer.pricesLabel || '';
+      document.getElementById('admin-prices-title').value = photographer.pricesTitle || '';
+      document.getElementById('admin-prices-desc').value = photographer.pricesDesc || '';
+    }
+
+    // --- РЕНДЕРИНГ ЭЛЕМЕНТОВ ---
+    function renderAll() {
+      renderCategoryFilters();
+      renderPhotosGrid();
+      renderPackages();
+      if (isAdminAuthenticated) {
+        renderAdminCategories();
+        renderAdminPhotosManager();
+        renderAdminPackages();
+      }
+      lucide.createIcons();
+    }
+
+    function renderCategoryFilters() {
+      const container = document.getElementById('categories-filter-container');
+      if (!container) return;
+      container.innerHTML = '';
+      
+      categories.forEach(cat => {
+        const count = cat === "Все" 
+          ? photos.length 
+          : photos.filter(p => p.category.toLowerCase() === cat.toLowerCase()).length;
+
+        const btn = document.createElement('button');
+        btn.onclick = () => {
+          activeCategory = cat;
+          renderCategoryFilters();
+          renderPhotosGrid();
+        };
+        
+        const isSelected = activeCategory === cat;
+        btn.className = `px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all border ${
+          isSelected 
+            ? "bg-amber-500 text-neutral-950 border-amber-500" 
+            : "bg-neutral-900 text-neutral-400 border-neutral-800 hover:border-neutral-700 hover:text-white"
+        }`;
+        btn.innerText = `${cat} (${count})`;
+        container.appendChild(btn);
+      });
+    }
+
+    function renderPhotosGrid() {
+      const grid = document.getElementById('photos-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      const filtered = activeCategory === "Все" 
+        ? photos 
+        : photos.filter(p => p.category.toLowerCase() === activeCategory.toLowerCase());
+
+      if (filtered.length === 0) {
+        grid.className = "block w-full";
+        grid.innerHTML = `
+          <div class="text-center py-16 bg-neutral-900/50 rounded-2xl border border-neutral-850">
+            <i data-lucide="image" class="w-12 h-12 text-neutral-600 mx-auto mb-3"></i>
+            <p class="text-neutral-400 text-sm">В этой секции пока нет кадров. Наполните галерею в админке!</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      grid.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6";
+
+      filtered.forEach(photo => {
+        const card = document.createElement('div');
+        card.className = "group bg-neutral-900/40 border border-neutral-900 rounded-2xl overflow-hidden cursor-pointer hover:border-neutral-850 transition-all duration-300 relative";
+        
+        card.onclick = (e) => {
+          if (e.target.closest('.admin-control')) return;
+          openLightbox(photo);
+        };
+
+        const badgePositionClass = (isAdminAuthenticated) ? 'top-3 right-12' : 'top-3 right-3';
+
+        card.innerHTML = `
+          <div class="relative aspect-[4/5] overflow-hidden bg-neutral-900">
+            <img src="${photo.url}" alt="${photo.title}" loading="lazy" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" onerror="this.src='https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&q=80&w=600'">
+            <div class="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/25 to-transparent opacity-90"></div>
+            
+            ${photo.location ? `
+              <div class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-neutral-950/80 backdrop-blur-md border border-neutral-800 text-[10px] text-neutral-300 flex items-center gap-1">
+                <i data-lucide="map-pin" class="w-3 h-3 text-amber-400"></i>
+                <span>${photo.location}</span>
+              </div>
+            ` : ''}
+
+            ${photo.featured ? `
+              <div class="absolute ${badgePositionClass} px-2.5 py-1 rounded-lg bg-amber-500 text-neutral-950 text-[10px] font-bold uppercase tracking-wider">⭐ Топ</div>
+            ` : ''}
+
+            ${isAdminAuthenticated ? `
+              <div class="absolute top-3 right-3 z-30 admin-control">
+                <button onclick="togglePhotoMenu(event, '${photo.id}')" class="w-8 h-8 rounded-lg bg-neutral-900/90 hover:bg-neutral-850 text-amber-400 border border-neutral-800 flex items-center justify-center shadow-lg transition-all focus:outline-none">
+                  <i data-lucide="settings" class="w-4 h-4"></i>
+                </button>
+                <div id="photo-menu-${photo.id}" class="absolute right-0 mt-1.5 w-36 bg-neutral-900 border border-neutral-800 rounded-xl shadow-2xl p-1 hidden z-40">
+                  <button onclick="openEditPhotoModal(event, '${photo.id}')" class="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-neutral-850 text-neutral-200 hover:text-white flex items-center gap-2">
+                    <i data-lucide="edit-3" class="w-3.5 h-3.5 text-amber-400"></i> Изменить
+                  </button>
+                  <button onclick="confirmDeletePhoto(event, '${photo.id}')" class="w-full text-left px-3 py-2 text-xs font-semibold rounded-lg hover:bg-red-950/40 hover:text-red-300 text-red-400 flex items-center gap-2">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Удалить
+                  </button>
+                </div>
+              </div>
+            ` : ''}
+
+            <div class="absolute bottom-3 left-3 right-3 p-2">
+              <span class="text-[9px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full border border-amber-500/30 font-semibold uppercase tracking-wider">${photo.category}</span>
+              <h3 class="text-sm font-bold text-white truncate mt-1.5">${photo.title}</h3>
+            </div>
+          </div>
+          <div class="p-4 border-t border-neutral-900">
+            <p class="text-xs text-neutral-400 line-clamp-2 leading-relaxed italic">«${photo.description || "Творческий кадр Елены Мартыновой."}»</p>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+      lucide.createIcons();
+    }
+
+    function renderPackages() {
+      const container = document.getElementById('packages-grid');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (packages.length === 0) {
+        container.className = "block w-full";
+        container.innerHTML = `
+          <div class="text-center py-12 bg-neutral-900/50 rounded-2xl border border-neutral-850">
+            <p class="text-neutral-400 text-sm">Список тарифов пуст. Вы можете добавить их в Панели управления.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.className = "grid grid-cols-1 md:grid-cols-3 gap-6";
+
+      packages.forEach(pkg => {
+        const card = document.createElement('div');
+        
+        if (pkg.popular) {
+          card.className = "relative bg-gradient-to-b from-neutral-900 to-neutral-950 border-2 border-amber-500 rounded-3xl p-6 flex flex-col justify-between shadow-xl shadow-amber-500/5";
+        } else {
+          card.className = "bg-neutral-900 border border-neutral-850 rounded-3xl p-6 flex flex-col justify-between";
+        }
+
+        const featuresHTML = pkg.features.map(f => `
+          <li class="flex items-start gap-2 text-xs text-neutral-300 leading-relaxed">
+            <i data-lucide="check" class="w-4 h-4 text-amber-400 shrink-0 mt-0.5"></i>
+            <span>${f}</span>
+          </li>
+        `).join('');
+
+        card.innerHTML = `
+          ${pkg.popular ? `<div class="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-amber-500 text-neutral-950 text-[10px] font-bold tracking-widest uppercase">Популярный</div>` : ''}
+          <div>
+            <span class="text-xs font-semibold text-neutral-400 uppercase block tracking-wider mb-1">${pkg.duration}</span>
+            <h3 class="text-xl font-bold text-white mb-2">${pkg.title}</h3>
+            <div class="text-3xl font-black text-amber-400 mb-6">${pkg.price}</div>
+            <ul class="space-y-3.5 mb-8">
+              ${featuresHTML}
+            </ul>
+          </div>
+          <button onclick="bookPackage('${pkg.title}')" class="w-full py-3 rounded-xl font-bold uppercase tracking-wider text-xs ${pkg.popular ? 'bg-amber-500 text-neutral-950 hover:bg-amber-400 shadow-md shadow-amber-500/10' : 'bg-neutral-950 hover:bg-neutral-900 text-neutral-300 border border-neutral-800'} transition-all">Заказать пакет</button>
+        `;
+        container.appendChild(card);
+      });
+      lucide.createIcons();
+    }
+
+    // --- ОБЛАЧНЫЕ ОПЕРАЦИИ (FIRESTORE) ---
+
+    async function saveProfile(e) {
+      e.preventDefault();
+      if (!currentUser) return;
+      
+      const updated = {
+        name: document.getElementById('admin-prof-name').value.trim(),
+        title: document.getElementById('admin-prof-title').value.trim(),
+        bio: document.getElementById('admin-prof-bio').value.trim(),
+        email: document.getElementById('admin-prof-email').value.trim(),
+        phone: document.getElementById('admin-prof-phone').value.trim(),
+        telegram: document.getElementById('admin-prof-tg').value.trim(),
+        instagram: document.getElementById('admin-prof-ig').value.trim(),
+        aboutImage: document.getElementById('admin-prof-avatar').value.trim(),
+        pricesLabel: photographer.pricesLabel || '',
+        pricesTitle: photographer.pricesTitle || '',
+        pricesDesc: photographer.pricesDesc || '',
+        categories: categories
+      };
+
+      try {
+        const configRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'photographer');
+        await setDoc(configRef, updated);
+        showToast("Профиль успешно обновлен в облаке!");
+      } catch (error) {
+        console.error(error);
+        showToast("Ошибка сохранения профиля", "error");
+      }
+    }
+
+    async function savePricesHeaders(e) {
+      e.preventDefault();
+      if (!currentUser) return;
+
+      const updated = {
+        ...photographer,
+        pricesLabel: document.getElementById('admin-prices-label').value.trim(),
+        pricesTitle: document.getElementById('admin-prices-title').value.trim(),
+        pricesDesc: document.getElementById('admin-prices-desc').value.trim(),
+        categories: categories
+      };
+
+      try {
+        const configRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'photographer');
+        await setDoc(configRef, updated);
+        showToast("Заголовки тарифов сохранены!");
+      } catch (error) {
+        console.error(error);
+        showToast("Ошибка сохранения", "error");
+      }
+    }
+
+    async function addCategory(e) {
+      e.preventDefault();
+      if (!currentUser) return;
+      const input = document.getElementById('admin-new-cat-name');
+      const name = input.value.trim();
+      if (!name) return;
+
+      if (categories.some(c => c.toLowerCase() === name.toLowerCase())) {
+        showToast("Такая категория уже есть!", "error");
+        return;
+      }
+
+      const newCategories = [...categories, name];
+      try {
+        const configRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'photographer');
+        await updateDoc(configRef, { categories: newCategories });
+        input.value = '';
+        showToast(`Категория "${name}" добавлена!`);
+      } catch (error) {
+        console.error(error);
+        showToast("Ошибка добавления категории", "error");
+      }
+    }
+
+    async function deleteCategory(catName) {
+      if (!currentUser) return;
+      let newCategories = categories.filter(c => c !== catName);
+      const fallback = newCategories.find(c => c !== "Все") || "Портреты";
+      if (!newCategories.includes(fallback)) {
+        newCategories.push(fallback);
+      }
+
+      try {
+        const configRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'photographer');
+        await updateDoc(configRef, { categories: newCategories });
+
+        const photosToUpdate = photos.filter(p => p.category === catName);
+        for (const p of photosToUpdate) {
+          const photoRef = doc(db, 'artifacts', appId, 'public', 'data', 'photos', p.id);
+          await updateDoc(photoRef, { category: fallback });
+        }
+
+        if (activeCategory === catName) activeCategory = "Все";
+        showToast(`Раздел удален, связанные фотографии перенесены в "${fallback}"`, "info");
+      } catch (error) {
+        console.error(error);
+        showToast("Ошибка удаления категории", "error");
+      }
+    }
+
+    async function savePackage(e) {
+      e.preventDefault();
+      if (!currentUser) return;
+      const id = document.getElementById('admin-pkg-id').value;
+      const title = document.getElementById('admin-pkg-title').value.trim();
+      const duration = document.getElementById('admin-pkg-duration').value.trim();
+      const price = document.getElementById('admin-pkg-price').value.trim();
+      const featuresText = document.getElementById('admin-pkg-features').value.trim();
+      const popular = document.getElementById('admin-pkg-popular').checked;
+
+      if (!title || !duration || !price || !featuresText) return;
+      const features = featuresText.split('\n').map(f => f.trim()).filter(f => f.length > 0);
+
+      try {
+        if (popular) {
+          for (const p of packages) {
+            if (p.id !== id && p.popular) {
+              const pRef = doc(db, 'artifacts', appId, 'public', 'data', 'packages', p.id);
+              await updateDoc(pRef, { popular: false });
+            }
+          }
+        }
+
+        const docId = id || Date.now().toString();
+        const pkgRef = doc(db, 'artifacts', appId, 'public', 'data', 'packages', docId);
+        await setDoc(pkgRef, {
+          id: docId,
+          title,
+          duration,
+          price,
+          features,
+          popular
+        });
+
+        showToast(id ? "Тариф обновлен!" : "Тариф добавлен!");
+        clearPackageForm();
+      } catch (error) {
+        console.error(error);
+        showToast("Ошибка сохранения тарифа", "error");
+      }
+    }
+
+    async function deletePackage(id) {
+      if (!currentUser) return;
+      try {
+        const pkgRef = doc(db, 'artifacts', appId, 'public', 'data', 'packages', id);
+        await deleteDoc(pkgRef);
+        showToast("Тариф удален", "info");
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    async function addPhoto(e) {
+      e.preventDefault();
+      if (!currentUser) return;
+      const title = document.getElementById('admin-photo-title').value.trim();
+      const category = document.getElementById('admin-photo-category').value;
+      const location = document.getElementById('admin-photo-location').value.trim();
+      const url = document.getElementById('admin-photo-url').value.trim();
+      const desc = document.getElementById('admin-photo-desc').value.trim();
+      const featured = document.getElementById('admin-photo-featured').checked;
+
+      if (!url) return;
+
+      const docId = Date.now().toString();
+      try {
+        const photoRef = doc(db, 'artifacts', appId, 'public', 'data', 'photos', docId);
+        await setDoc(photoRef, {
+          id: docId,
+          title: title || `Кадр #${photos.length + 1}`,
+          category,
+          location,
+          url,
+          description: desc,
+          featured
+        });
+
+        document.getElementById('admin-photo-title').value = '';
+        document.getElementById('admin-photo-location').value = '';
+        document.getElementById('admin-photo-url').value = '';
+        document.getElementById('admin-photo-desc').value = '';
+        document.getElementById('admin-photo-featured').checked = false;
+
+        showToast("Фотография загружена в облако!");
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    async function saveEditedPhoto(event) {
+      event.preventDefault();
+      if (!currentUser) return;
+      const id = document.getElementById('edit-photo-id').value;
+      const title = document.getElementById('edit-photo-title').value.trim();
+      const category = document.getElementById('edit-photo-category').value;
+      const location = document.getElementById('edit-photo-location').value.trim();
+      const url = document.getElementById('edit-photo-url').value.trim();
+      const desc = document.getElementById('edit-photo-desc').value.trim();
+      const featured = document.getElementById('edit-photo-featured').checked;
+
+      try {
+        const photoRef = doc(db, 'artifacts', appId, 'public', 'data', 'photos', id);
+        await setDoc(photoRef, {
+          id,
+          title,
+          category,
+          location,
+          url,
+          description: desc,
+          featured
+        });
+        closeEditPhotoModal();
+        showToast("Снимок обновлен!");
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    // --- ИНТЕРФЕЙСНЫЕ МЕТОДЫ (TOAST, NAV, MODALS) ---
+
+    function showToast(message, type = "success") {
+      const toast = document.getElementById('toast');
+      const toastText = document.getElementById('toast-text');
+      if (!toast || !toastText) return;
+
+      toastText.innerText = message;
+      toast.classList.remove('hidden', 'border-amber-500', 'border-red-500', 'border-blue-500');
+
+      if (type === "error") {
+        toast.classList.add('border-red-500');
+      } else if (type === "info") {
+        toast.classList.add('border-blue-500');
+      } else {
+        toast.classList.add('border-amber-500');
+      }
+
+      toast.classList.remove('hidden');
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 5500);
+    }
+
+    function navigateTo(tab) {
+      activeTab = tab;
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      const activeTabEl = document.getElementById(`tab-${tab}`);
+      if (activeTabEl) {
+        activeTabEl.classList.remove('hidden');
+      }
+
+      document.querySelectorAll('nav border').forEach(btn => {
+        btn.className = "text-xs font-semibold tracking-wider uppercase transition-colors text-neutral-300 hover:text-amber-400";
+      });
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      renderAll();
+    }
+
+    function openLightbox(photo) {
+      document.getElementById('lightbox-img').src = photo.url;
+      document.getElementById('lightbox-category').innerText = photo.category;
+      document.getElementById('lightbox-title').innerText = photo.title;
+
+      const locContainer = document.getElementById('lightbox-location-container');
+      if (photo.location) {
+        document.getElementById('lightbox-location').innerText = photo.location;
+        locContainer.classList.remove('hidden');
+      } else {
+        locContainer.classList.add('hidden');
+      }
+
+      const descBox = document.getElementById('lightbox-desc-box');
+      if (photo.description) {
+        descBox.innerText = `« ${photo.description} »`;
+        descBox.classList.remove('hidden');
+      } else {
+        descBox.classList.add('hidden');
+      }
+
+      document.getElementById('lightbox-cta-btn').onclick = () => {
+        closeLightbox();
+        navigateTo('contact');
+        document.getElementById('input-category').value = "Индивидуальная фотосессия";
+        document.getElementById('input-msg').value = `Здравствуйте, Елена! Безумно понравился ваш кадр "${photo.title}" (снятый в: ${photo.location || 'без названия'}). Хочу обсудить съемку в похошем стиле!`;
+        showToast("Тема заполнена автоматически!", "success");
+      };
+
+      document.getElementById('lightbox').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.add('hidden');
+    }
+
+    function submitForm(event) {
+      event.preventDefault();
+      document.getElementById('booking-form').classList.add('hidden');
+      document.getElementById('form-success-message').classList.remove('hidden');
+      showToast("Заявка успешно отправлена!", "success");
+
+      setTimeout(() => {
+        document.getElementById('input-name').value = '';
+        document.getElementById('input-contact').value = '';
+        document.getElementById('input-msg').value = '';
+        document.getElementById('booking-form').classList.remove('hidden');
+        document.getElementById('form-success-message').classList.add('hidden');
+      }, 5000);
+    }
+
+    // Автоматический перенос выбранного тарифа в форму контактов
+    function bookPackage(packageName) {
+      navigateTo('contact');
+      document.getElementById('input-category').value = "Индивидуальная фотосессия";
+      document.getElementById('input-msg').value = `Здравствуйте, Елена! Хочу записаться на пакет услуг "${packageName}". Пожалуйста, свяжитесь со мной.`;
+    }
+
+    function adminLogin(event) {
+      event.preventDefault();
+      const password = document.getElementById('admin-password-input').value;
+      const errorText = document.getElementById('admin-login-error');
+
+      if (password === "admin") {
+        isAdminAuthenticated = true;
+        errorText.classList.add('hidden');
+        document.getElementById('admin-auth-card').classList.add('hidden');
+        document.getElementById('admin-dashboard').classList.remove('hidden');
+        showToast("Успешный вход в систему!", "success");
+        switchAdminTab('categories');
+        renderAll();
+      } else {
+        errorText.innerText = "Неверный пароль. Попробуйте 'admin'";
+        errorText.classList.remove('hidden');
+      }
+    }
+
+    function adminLogout() {
+      isAdminAuthenticated = false;
+      document.getElementById('admin-password-input').value = '';
+      document.getElementById('admin-auth-card').classList.remove('hidden');
+      document.getElementById('admin-dashboard').classList.add('hidden');
+      showToast("Вы вышли из системы управления");
+      renderAll();
+    }
+
+    function switchAdminTab(adminTabId) {
+      activeAdminTab = adminTabId;
+      document.querySelectorAll('.admin-pane-content').forEach(pane => {
+        pane.classList.add('hidden');
+      });
+      
+      const activePane = document.getElementById(`admin-panel-${adminTabId}`);
+      if (activePane) {
+        activePane.classList.remove('hidden');
+      }
+      
+      document.querySelectorAll('[id^="admin-tab-btn-"]').forEach(btn => {
+        btn.className = "px-4 py-3 text-xs sm:text-sm font-bold whitespace-nowrap border-b-2 border-transparent text-neutral-400 hover:text-white transition-all focus:outline-none flex items-center gap-2";
+      });
+      
+      const activeBtn = document.getElementById(`admin-tab-btn-${adminTabId}`);
+      if (activeBtn) {
+        activeBtn.className = "px-4 py-3 text-xs sm:text-sm font-bold whitespace-nowrap border-b-2 border-amber-500 text-amber-400 transition-all focus:outline-none flex items-center gap-2";
+      }
+      lucide.createIcons();
+    }
+
+    function toggleHelper() {
+      const box = document.getElementById('cors-helper-box');
+      if (box) box.classList.toggle('hidden');
+    }
+
+    function editPackage(id) {
+      const pkg = packages.find(p => p.id === id);
+      if (!pkg) return;
+
+      document.getElementById('admin-pkg-id').value = pkg.id;
+      document.getElementById('admin-pkg-title').value = pkg.title;
+      document.getElementById('admin-pkg-duration').value = pkg.duration;
+      document.getElementById('admin-pkg-price').value = pkg.price;
+      document.getElementById('admin-pkg-features').value = pkg.features.join('\n');
+      document.getElementById('admin-pkg-popular').checked = !!pkg.popular;
+
+      document.getElementById('admin-pkg-submit-btn').innerText = "Сохранить тариф";
+      showToast("Тариф загружен в форму", "info");
+    }
+
+    function clearPackageForm() {
+      document.getElementById('admin-pkg-id').value = '';
+      document.getElementById('admin-pkg-title').value = '';
+      document.getElementById('admin-pkg-duration').value = '';
+      document.getElementById('admin-pkg-price').value = '';
+      document.getElementById('admin-pkg-features').value = '';
+      document.getElementById('admin-pkg-popular').checked = false;
+      document.getElementById('admin-pkg-submit-btn').innerText = "Добавить / Сохранить";
+    }
+
+    function openEditPhotoModal(event, photoId) {
+      event.stopPropagation();
+      const photo = photos.find(p => p.id === photoId);
+      if (!photo) return;
+
+      document.getElementById('edit-photo-id').value = photo.id;
+      document.getElementById('edit-photo-title').value = photo.title;
+      document.getElementById('edit-photo-location').value = photo.location || '';
+      document.getElementById('edit-photo-url').value = photo.url;
+      document.getElementById('edit-photo-desc').value = photo.description || '';
+      document.getElementById('edit-photo-featured').checked = !!photo.featured;
+
+      const select = document.getElementById('edit-photo-category');
+      if (select) {
+        select.innerHTML = '';
+        categories.forEach(cat => {
+          if (cat !== "Все") {
+            const opt = document.createElement('option');
+            opt.value = cat;
+            opt.innerText = cat;
+            if (cat === photo.category) opt.selected = true;
+            select.appendChild(opt);
+          }
+        });
+      }
+
+      document.getElementById('edit-photo-modal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeEditPhotoModal() {
+      document.getElementById('edit-photo-modal').classList.add('hidden');
+    }
+
+    function confirmDeletePhoto(event, photoId) {
+      event.stopPropagation();
+      pendingDeletePhotoId = photoId;
+      document.getElementById('confirm-modal').classList.remove('hidden');
+
+      document.getElementById('confirm-delete-btn').onclick = async function() {
+        if (pendingDeletePhotoId && currentUser) {
+          try {
+            const photoRef = doc(db, 'artifacts', appId, 'public', 'data', 'photos', pendingDeletePhotoId);
+            await deleteDoc(photoRef);
+            showToast("Снимок удален", "info");
+          } catch (error) {
+            console.error(error);
+          }
+          pendingDeletePhotoId = null;
+        }
+        closeConfirmModal();
+      };
+    }
+
+    function closeConfirmModal() {
+      document.getElementById('confirm-modal').classList.add('hidden');
+    }
+
+    function togglePhotoMenu(event, photoId) {
+      event.stopPropagation();
+      const menu = document.getElementById(`photo-menu-${photoId}`);
+      if (!menu) return;
+      const isCurrentlyHidden = menu.classList.contains('hidden');
+      
+      document.querySelectorAll('[id^="photo-menu-"]').forEach(m => m.classList.add('hidden'));
+      
+      if (isCurrentlyHidden) {
+        menu.classList.remove('hidden');
+      }
+    }
+
+    function renderAdminCategories() {
+      const list = document.getElementById('admin-categories-list');
+      const select = document.getElementById('admin-photo-category');
+      
+      if (list) list.innerHTML = '';
+      if (select) select.innerHTML = '';
+
+      categories.forEach(cat => {
+        if (list) {
+          const item = document.createElement('div');
+          item.className = "flex items-center gap-2 px-3 py-1.5 bg-neutral-950 border border-neutral-800 rounded-xl text-xs text-neutral-300";
+          item.innerHTML = `
+            <span>${cat}</span>
+            ${cat !== "Все" ? `<button type="button" onclick="deleteCategory('${cat}')" class="text-red-400 hover:text-red-300 font-bold pl-1 border-l border-neutral-800 ml-1">✕</button>` : ''}
+          `;
+          list.appendChild(item);
+        }
+
+        if (select && cat !== "Все") {
+          const opt = document.createElement('option');
+          opt.value = cat;
+          opt.innerText = cat;
+          select.appendChild(opt);
+        }
+      });
+    }
+
+    function renderAdminPackages() {
+      const container = document.getElementById('admin-packages-list');
+      if (!container) return;
+      container.innerHTML = '';
+
+      packages.forEach(pkg => {
+        const item = document.createElement('div');
+        item.className = "flex items-center justify-between p-2.5 bg-neutral-950 border border-neutral-800 rounded-xl gap-3";
+        item.innerHTML = `
+          <div class="min-w-0 flex-1">
+            <h4 class="font-bold text-xs text-white truncate">${pkg.title} ${pkg.popular ? '<span class="text-[9px] text-amber-400 font-bold uppercase ml-1">⭐ Популярный</span>' : ''}</h4>
+            <span class="text-[10px] text-neutral-400">${pkg.duration} — ${pkg.price}</span>
+          </div>
+          <div class="flex gap-1.5 shrink-0">
+            <button onclick="editPackage('${pkg.id}')" class="p-1.5 bg-neutral-900 hover:bg-neutral-850 text-amber-400 rounded-lg border border-neutral-800 transition-colors">
+              <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+            </button>
+            <button onclick="deletePackage('${pkg.id}')" class="p-1.5 bg-red-950/40 hover:bg-red-900 text-red-200 rounded-lg border border-red-900/40 transition-colors">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+      lucide.createIcons();
+    }
+
+    function renderAdminPhotosManager() {
+      const container = document.getElementById('admin-photos-manager-list');
+      if (!container) return;
+      container.innerHTML = '';
+
+      photos.forEach(photo => {
+        const item = document.createElement('div');
+        item.className = "flex items-center justify-between p-2.5 bg-neutral-950 border border-neutral-800 rounded-xl gap-3";
+        item.innerHTML = `
+          <div class="flex items-center gap-3 min-w-0">
+            <img src="${photo.url}" alt="" class="w-10 h-10 rounded-lg object-cover bg-neutral-900 shrink-0" onerror="this.src='https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&q=80&w=150'">
+            <div class="min-w-0">
+              <h4 class="font-bold text-xs text-white truncate">${photo.title}</h4>
+              <div class="flex gap-1.5 items-center mt-0.5">
+                <span class="text-[9px] text-amber-400 bg-amber-500/10 px-1.5 py-0.2 rounded border border-amber-500/20">${photo.category}</span>
+                <span class="text-[10px] text-neutral-400 truncate">${photo.location || "Без локации"}</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-1 shrink-0">
+            <button onclick="openEditPhotoModal(event, '${photo.id}')" class="p-1.5 bg-neutral-900 hover:bg-neutral-850 text-amber-400 rounded-lg border border-neutral-800 transition-colors">
+              <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+            </button>
+            <button onclick="confirmDeletePhoto(event, '${photo.id}')" class="p-1.5 bg-red-950/40 hover:bg-red-900 text-red-200 rounded-lg border border-red-900/40 transition-colors">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+      lucide.createIcons();
+    }
+
+    // --- ЭКСПОРТ ДЛЯ ИНЛАЙН ОБРАБОТЧИКОВ ---
+    window.navigateTo = navigateTo;
+    window.submitForm = submitForm;
+    window.adminLogin = adminLogin;
+    window.adminLogout = adminLogout;
+    window.switchAdminTab = switchAdminTab;
+    window.togglePhotoMenu = togglePhotoMenu;
+    window.openEditPhotoModal = openEditPhotoModal;
+    window.closeEditPhotoModal = closeEditPhotoModal;
+    window.saveEditedPhoto = saveEditedPhoto;
+    window.confirmDeletePhoto = confirmDeletePhoto;
+    window.closeConfirmModal = closeConfirmModal;
+    window.openLightbox = openLightbox;
+    window.closeLightbox = closeLightbox;
+    window.bookPackage = bookPackage;
+    window.toggleHelper = toggleHelper;
+    window.addCategory = addCategory;
+    window.deleteCategory = deleteCategory;
+    window.savePricesHeaders = savePricesHeaders;
+    window.savePackage = savePackage;
+    window.clearPackageForm = clearPackageForm;
+    window.deletePackage = deletePackage;
+    window.addPhoto = addPhoto;
+    window.editPackage = editPackage;
+    window.saveProfile = saveProfile;
+  </script>
+</body>
+</html>
