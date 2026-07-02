@@ -425,73 +425,24 @@
 
         <!-- ВКЛАДКА 3: УПРАВЛЕНИЕ ФОТОГРАФИЯМИ -->
         <div id="admin-panel-photos" class="admin-pane-content space-y-6 hidden">
-          <!-- Добавление нового фото -->
-          <div class="bg-neutral-900 border border-neutral-850 rounded-xl p-5 space-y-3.5">
-            <div class="flex items-center justify-between">
-              <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                <i data-lucide="plus" class="w-4.5 h-4.5 text-amber-400"></i> Добавить фото в портфолио
-              </h3>
-              <button onclick="toggleHelper()" type="button" class="text-[10px] text-amber-400 hover:underline flex items-center gap-1">
-                <i data-lucide="info" class="w-3.5 h-3.5"></i> Google Фото и CORS?
-              </button>
-            </div>
-
-            <div id="cors-helper-box" class="p-4 rounded-xl bg-neutral-950 border border-amber-500/10 text-[11px] space-y-2 text-neutral-300 hidden">
-              <p class="font-bold text-amber-400">⚠️ Про CORS и стабильные ссылки:</p>
-              <p>Прямые ссылки Google Фото часто блокируются из-за CORS-политик Google. Рекомендуется использовать проверенные площадки для копирования адреса картинок:</p>
-              <ul class="list-disc list-inside space-y-1 font-semibold text-neutral-200">
-                <li>Загрузить фото в Telegra.ph и скопировать его URL</li>
-                <li>Скопировать прямую ссылку из любого Telegram-канала или ВК</li>
-                <li>Использовать бесплатные хостинги картинок типа Imgur</li>
-              </ul>
-            </div>
-
-            <form onsubmit="addPhoto(event)" class="space-y-3.5">
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div class="sm:col-span-2">
-                  <label class="block text-[10px] text-neutral-400 font-bold mb-1">Название снимка</label>
-                  <input id="admin-photo-title" type="text" required placeholder="Например: Розовый закат" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
-                </div>
-                <div>
-                  <label class="block text-[10px] text-neutral-400 font-bold mb-1">Категория</label>
-                  <select id="admin-photo-category" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
-                    <!-- Заполняется динамически -->
-                  </select>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label class="block text-[10px] text-neutral-400 font-bold mb-1">Локация / Место съемки</label>
-                  <input id="admin-photo-location" type="text" placeholder="Например: Москва-Сити" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
-                </div>
-                <div>
-                  <label class="block text-[10px] text-neutral-400 font-bold mb-1">Ссылка на изображение (URL)</label>
-                  <input id="admin-photo-url" type="url" required placeholder="https://..." class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
-                </div>
-              </div>
-
-              <div>
-                <label class="block text-[10px] text-neutral-400 font-bold mb-1">История кадра / Описание</label>
-                <textarea id="admin-photo-desc" rows="2" placeholder="Опишите атмосферу, свет, настроение съемки..." class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"></textarea>
-              </div>
-
-              <div class="flex items-center gap-2">
-                <input id="admin-photo-featured" type="checkbox" class="w-4 h-4 rounded border-neutral-800 bg-neutral-950 text-amber-500 focus:ring-amber-500">
-                <label for="admin-photo-featured" class="text-xs text-neutral-300 cursor-pointer select-none">Поместить в «Избранное» (показать стикер "⭐ Топ")</label>
-              </div>
-
-              <button type="submit" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold rounded-xl transition-all flex items-center gap-1.5 text-xs ml-auto">
-                <i data-lucide="plus" class="w-3.5 h-3.5"></i> Добавить фото в галерею
-              </button>
-            </form>
-          </div>
-
           <!-- Менеджер загруженных кадров -->
           <div class="bg-neutral-900 border border-neutral-850 rounded-xl p-5 space-y-4">
-            <h3 class="text-sm font-bold text-white flex items-center gap-2">
-              <i data-lucide="folder-open" class="w-4.5 h-4.5 text-amber-400"></i> Управление загруженными кадрами
-            </h3>
+            <div class="flex items-center justify-between gap-3 flex-wrap">
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="folder-open" class="w-4.5 h-4.5 text-amber-400"></i> Управление загруженными кадрами
+              </h3>
+              <button onclick="openAddPhotoModal()" type="button" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold rounded-xl transition-all flex items-center gap-1.5 text-xs">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i> Добавить
+              </button>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <label class="text-[10px] text-neutral-400 font-bold shrink-0">Фильтр по категории:</label>
+              <select id="admin-photo-filter" onchange="renderAdminPhotosManager()" class="w-full sm:w-56 bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                <!-- Заполняется динамически -->
+              </select>
+            </div>
+
             <div id="admin-photos-manager-list" class="space-y-2.5 max-h-[400px] overflow-y-auto pr-1">
               <!-- Список рендерится динамически -->
             </div>
@@ -657,6 +608,76 @@
         <div class="flex justify-end gap-3 pt-2">
           <button type="button" onclick="closeEditPhotoModal()" class="px-4 py-2 rounded-xl border border-neutral-800 hover:border-neutral-700 text-xs text-neutral-400 hover:text-white font-bold transition-all">Отмена</button>
           <button type="submit" class="px-5 py-2 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold rounded-xl text-xs transition-all">Сохранить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- --- МОДАЛЬНОЕ ОКНО ДОБАВЛЕНИЯ ФОТО В ПОРТФОЛИО --- -->
+  <div id="add-photo-modal" class="fixed inset-0 z-50 bg-neutral-950/98 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto hidden">
+    <div class="bg-neutral-900 border border-neutral-850 rounded-3xl p-6 sm:p-8 max-w-lg w-full relative">
+      <button onclick="closeAddPhotoModal()" class="absolute top-4 right-4 p-1.5 rounded-full bg-neutral-950 text-neutral-400 hover:text-white border border-neutral-800 transition-colors">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      <div class="flex items-center justify-between gap-3 mb-4 pr-8">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <i data-lucide="plus" class="text-amber-400 w-5 h-5"></i> Добавить фото в портфолио
+        </h3>
+        <button onclick="toggleHelper()" type="button" class="text-[10px] text-amber-400 hover:underline flex items-center gap-1 shrink-0">
+          <i data-lucide="info" class="w-3.5 h-3.5"></i> CORS?
+        </button>
+      </div>
+
+      <div id="cors-helper-box" class="p-4 rounded-xl bg-neutral-950 border border-amber-500/10 text-[11px] space-y-2 text-neutral-300 hidden mb-4">
+        <p class="font-bold text-amber-400">⚠️ Про CORS и стабильные ссылки:</p>
+        <p>Прямые ссылки Google Фото часто блокируются из-за CORS-политик Google. Рекомендуется использовать проверенные площадки для копирования адреса картинок:</p>
+        <ul class="list-disc list-inside space-y-1 font-semibold text-neutral-200">
+          <li>Загрузить фото в Telegra.ph и скопировать его URL</li>
+          <li>Скопировать прямую ссылку из любого Telegram-канала или ВК</li>
+          <li>Использовать бесплатные хостинги картинок типа Imgur</li>
+        </ul>
+      </div>
+
+      <form onsubmit="addPhoto(event)" class="space-y-3.5">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="sm:col-span-2">
+            <label class="block text-[10px] text-neutral-400 font-bold mb-1">Название снимка</label>
+            <input id="admin-photo-title" type="text" required placeholder="Например: Розовый закат" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-[10px] text-neutral-400 font-bold mb-1">Категория</label>
+            <select id="admin-photo-category" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+              <!-- Заполняется динамически -->
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[10px] text-neutral-400 font-bold mb-1">Локация / Место съемки</label>
+            <input id="admin-photo-location" type="text" placeholder="Например: Москва-Сити" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-[10px] text-neutral-400 font-bold mb-1">Ссылка на изображение (URL)</label>
+            <input id="admin-photo-url" type="url" required placeholder="https://..." class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[10px] text-neutral-400 font-bold mb-1">История кадра / Описание</label>
+          <textarea id="admin-photo-desc" rows="2" placeholder="Опишите атмосферу, свет, настроение съемки..." class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"></textarea>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <input id="admin-photo-featured" type="checkbox" class="w-4 h-4 rounded border-neutral-800 bg-neutral-950 text-amber-500 focus:ring-amber-500">
+          <label for="admin-photo-featured" class="text-xs text-neutral-300 cursor-pointer select-none">Поместить в «Избранное» (показать стикер "⭐ Топ")</label>
+        </div>
+
+        <div class="flex justify-end gap-3 pt-2">
+          <button type="button" onclick="closeAddPhotoModal()" class="px-4 py-2 rounded-xl border border-neutral-800 hover:border-neutral-700 text-xs text-neutral-400 hover:text-white font-bold transition-all">Отмена</button>
+          <button type="submit" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold rounded-xl transition-all flex items-center gap-1.5 text-xs">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Добавить фото в галерею
+          </button>
         </div>
       </form>
     </div>
@@ -1305,6 +1326,7 @@
         document.getElementById('admin-photo-desc').value = '';
         document.getElementById('admin-photo-featured').checked = false;
 
+        closeAddPhotoModal();
         showToast("Фотография загружена в облако!");
       } catch (error) {
         console.error(error);
@@ -1649,6 +1671,35 @@
       document.getElementById('admin-pkg-submit-btn').innerText = "Добавить / Сохранить";
     }
 
+    function openAddPhotoModal() {
+      document.getElementById('admin-photo-title').value = '';
+      document.getElementById('admin-photo-location').value = '';
+      document.getElementById('admin-photo-url').value = '';
+      document.getElementById('admin-photo-desc').value = '';
+      document.getElementById('admin-photo-featured').checked = false;
+      document.getElementById('cors-helper-box').classList.add('hidden');
+
+      const select = document.getElementById('admin-photo-category');
+      if (select) {
+        select.innerHTML = '';
+        categories.forEach(cat => {
+          if (cat !== "Все") {
+            const opt = document.createElement('option');
+            opt.value = cat;
+            opt.innerText = cat;
+            select.appendChild(opt);
+          }
+        });
+      }
+
+      document.getElementById('add-photo-modal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeAddPhotoModal() {
+      document.getElementById('add-photo-modal').classList.add('hidden');
+    }
+
     function openEditPhotoModal(event, photoId) {
       event.stopPropagation();
       const photo = photos.find(p => p.id === photoId);
@@ -1723,9 +1774,22 @@
     function renderAdminCategories() {
       const list = document.getElementById('admin-categories-list');
       const select = document.getElementById('admin-photo-category');
-      
+      const filter = document.getElementById('admin-photo-filter');
+
       if (list) list.innerHTML = '';
       if (select) select.innerHTML = '';
+
+      if (filter) {
+        const prevValue = filter.value || 'Все';
+        filter.innerHTML = '';
+        categories.forEach(cat => {
+          const opt = document.createElement('option');
+          opt.value = cat;
+          opt.innerText = cat;
+          filter.appendChild(opt);
+        });
+        filter.value = categories.includes(prevValue) ? prevValue : 'Все';
+      }
 
       categories.forEach(cat => {
         if (list) {
@@ -1779,7 +1843,18 @@
       if (!container) return;
       container.innerHTML = '';
 
-      photos.forEach(photo => {
+      const filterEl = document.getElementById('admin-photo-filter');
+      const activeFilter = filterEl ? filterEl.value : 'Все';
+      const filteredPhotos = (!activeFilter || activeFilter === 'Все')
+        ? photos
+        : photos.filter(p => p.category === activeFilter);
+
+      if (filteredPhotos.length === 0) {
+        container.innerHTML = '<p class="text-xs text-neutral-500 text-center py-4">Нет фотографий в этой категории.</p>';
+        return;
+      }
+
+      filteredPhotos.forEach(photo => {
         const item = document.createElement('div');
         item.className = "flex items-center justify-between p-2.5 bg-neutral-950 border border-neutral-800 rounded-xl gap-3";
         item.innerHTML = `
@@ -1961,8 +2036,11 @@
     window.adminLogout = adminLogout;
     window.switchAdminTab = switchAdminTab;
     window.togglePhotoMenu = togglePhotoMenu;
+    window.openAddPhotoModal = openAddPhotoModal;
+    window.closeAddPhotoModal = closeAddPhotoModal;
     window.openEditPhotoModal = openEditPhotoModal;
     window.closeEditPhotoModal = closeEditPhotoModal;
+    window.renderAdminPhotosManager = renderAdminPhotosManager;
     window.saveEditedPhoto = saveEditedPhoto;
     window.confirmDeletePhoto = confirmDeletePhoto;
     window.closeConfirmModal = closeConfirmModal;
