@@ -57,11 +57,8 @@
   <!-- --- ШАПКА САЙТА --- -->
   <header class="sticky top-0 z-40 backdrop-blur-md bg-neutral-950/80 border-b border-neutral-900">
     <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
-      <!-- Логотип -->
-      <button onclick="navigateTo('admin')" class="flex items-center gap-2.5 text-left focus:outline-none group" title="Личный кабинет">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-200 flex items-center justify-center text-neutral-950 font-bold shadow-md shadow-amber-500/15">
-          <i data-lucide="camera" class="w-5 h-5"></i>
-        </div>
+      <!-- Имя фотографа -->
+      <button onclick="navigateTo('admin')" class="flex items-center text-left focus:outline-none group" title="Личный кабинет">
         <div>
           <span id="header-first-name" class="block font-bold text-sm sm:text-base leading-none tracking-wider text-white uppercase group-hover:text-amber-400 transition-colors">Елена</span>
           <span id="header-last-name" class="block font-light text-[9px] sm:text-[10px] tracking-widest text-neutral-400 uppercase mt-0.5">Мартынова</span>
@@ -70,27 +67,26 @@
 
       <!-- Мобильная навигация в шапке -->
       <div class="flex md:hidden items-center gap-1.5">
-        <button onclick="navigateTo('gallery')" id="mob-nav-gallery" class="p-2 text-amber-400 transition-colors focus:outline-none" title="Портфолио">
+        <button onclick="navigateTo('gallery')" id="mob-nav-gallery" class="mob-nav-btn p-2 w-9 h-9 flex items-center justify-center rounded-lg text-amber-400 transition-colors focus:outline-none" title="Портфолио">
           <i data-lucide="image" class="w-5 h-5"></i>
         </button>
-        <button onclick="navigateTo('prices')" id="mob-nav-prices" class="p-2 text-neutral-400 hover:text-white transition-colors focus:outline-none" title="Цены">
+        <button onclick="navigateTo('prices')" id="mob-nav-prices" class="mob-nav-btn p-2 w-9 h-9 flex items-center justify-center rounded-lg text-neutral-400 hover:text-white transition-colors focus:outline-none" title="Цены">
           <i data-lucide="compass" class="w-5 h-5"></i>
         </button>
-        <button onclick="navigateTo('about')" id="mob-nav-about" class="p-2 text-neutral-400 hover:text-white transition-colors focus:outline-none" title="Обо мне">
+        <button onclick="navigateTo('about')" id="mob-nav-about" class="mob-nav-btn p-2 w-9 h-9 flex items-center justify-center rounded-lg text-neutral-400 hover:text-white transition-colors focus:outline-none" title="Обо мне">
           <i data-lucide="book-open" class="w-5 h-5"></i>
         </button>
-        <!-- Кнопка моментальной записи -->
-        <button onclick="navigateTo('contact')" id="mob-nav-contact" class="p-2 rounded-xl bg-amber-500 text-neutral-950 shadow-md shadow-amber-500/20 active:scale-95 transition-all ml-1" title="Запись">
-          <i data-lucide="calendar" class="w-4.5 h-4.5 stroke-[2.5]"></i>
+        <button onclick="navigateTo('contact')" id="mob-nav-contact" class="mob-nav-btn p-2 w-9 h-9 flex items-center justify-center rounded-lg text-neutral-400 hover:text-white transition-colors focus:outline-none" title="Запись">
+          <i data-lucide="calendar" class="w-5 h-5"></i>
         </button>
       </div>
 
       <!-- Десктопная навигация -->
       <nav class="hidden md:flex items-center gap-6 lg:gap-8">
-        <button onclick="navigateTo('gallery')" id="nav-gallery" class="text-xs font-semibold tracking-wider uppercase transition-colors text-amber-400">Портфолио</button>
-        <button onclick="navigateTo('prices')" id="nav-prices" class="text-xs font-semibold tracking-wider uppercase transition-colors text-neutral-300 hover:text-amber-400">Цены</button>
-        <button onclick="navigateTo('about')" id="nav-about" class="text-xs font-semibold tracking-wider uppercase transition-colors text-neutral-300 hover:text-amber-400">Обо мне</button>
-        <button onclick="navigateTo('contact')" id="nav-contact" class="text-xs font-semibold tracking-wider uppercase transition-colors text-neutral-300 hover:text-amber-400">Запись</button>
+        <button onclick="navigateTo('gallery')" id="nav-gallery" class="nav-link text-xs font-semibold tracking-wider uppercase transition-colors text-amber-400">Портфолио</button>
+        <button onclick="navigateTo('prices')" id="nav-prices" class="nav-link text-xs font-semibold tracking-wider uppercase transition-colors text-neutral-300 hover:text-amber-400">Цены</button>
+        <button onclick="navigateTo('about')" id="nav-about" class="nav-link text-xs font-semibold tracking-wider uppercase transition-colors text-neutral-300 hover:text-amber-400">Обо мне</button>
+        <button onclick="navigateTo('contact')" id="nav-contact" class="nav-link text-xs font-semibold tracking-wider uppercase transition-colors text-neutral-300 hover:text-amber-400">Запись</button>
       </nav>
     </div>
   </header>
@@ -1377,9 +1373,25 @@
         activeTabEl.classList.remove('hidden');
       }
 
-      document.querySelectorAll('nav border').forEach(btn => {
-        btn.className = "text-xs font-semibold tracking-wider uppercase transition-colors text-neutral-300 hover:text-amber-400";
+      // Подсветка активного пункта в десктопной навигации
+      document.querySelectorAll('.nav-link').forEach(btn => {
+        btn.className = "nav-link text-xs font-semibold tracking-wider uppercase transition-colors text-neutral-300 hover:text-amber-400";
       });
+      const activeDesktopBtn = document.getElementById(`nav-${tab}`);
+      if (activeDesktopBtn) {
+        activeDesktopBtn.className = "nav-link text-xs font-semibold tracking-wider uppercase transition-colors text-amber-400";
+      }
+
+      // Подсветка активной иконки в мобильной навигации
+      document.querySelectorAll('.mob-nav-btn').forEach(btn => {
+        btn.classList.remove('text-amber-400');
+        btn.classList.add('text-neutral-400');
+      });
+      const activeMobBtn = document.getElementById(`mob-nav-${tab}`);
+      if (activeMobBtn) {
+        activeMobBtn.classList.remove('text-neutral-400');
+        activeMobBtn.classList.add('text-amber-400');
+      }
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
       renderAll();
