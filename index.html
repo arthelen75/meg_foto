@@ -317,6 +317,9 @@
               </h3>
               <span class="text-[10px] text-neutral-500">Обновляется в реальном времени</span>
             </div>
+            <div id="admin-requests-filters" class="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+              <!-- Рендерится динамически -->
+            </div>
             <div id="admin-requests-list" class="space-y-3">
               <!-- Рендерится динамически -->
             </div>
@@ -687,7 +690,10 @@
     import { getAuth, signInAnonymously, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
     import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, onSnapshot, addDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
-    // --- ДЕФОЛТНЫЕ ДАННЫЕ ДЛЯ ИНИЦИАЛИЗАЦИИ БАЗЫ ---
+    // --- ДЕФОЛТНЫЕ ДАННЫЕ (используются ТОЛЬКО как значения по умолчанию
+    // в интерфейсе, если в базе еще нет документа с настройками профиля.
+    // Они НЕ записываются автоматически в облако — сохранение происходит
+    // только когда администратор сам нажмет "Сохранить" в личном кабинете) ---
     const DEFAULT_INFO = {
       name: "Елена Мартынова",
       title: "Художественная & Портретная Фотография",
@@ -701,27 +707,6 @@
       pricesTitle: "Стоимость фотосессий",
       pricesDesc: "Все цены прозрачны. Никаких скрытых доплат. Аренда фотостудии обсуждается отдельно."
     };
-
-    const DEFAULT_PHOTOS = [
-      {
-        id: "1",
-        title: "В лучах заходящего солнца",
-        description: "Спонтанный кадр во время прогулки по старому городу. Поймали невероятный золотой свет.",
-        location: "Санкт-Петербург, крыши",
-        category: "Портреты",
-        url: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=1200",
-        featured: true
-      },
-      {
-        id: "2",
-        title: "Утренняя дымка",
-        description: "Проснулись в 4 утра, чтобы застать этот туман над озером.",
-        location: "Карелия, Ладожское озеро",
-        category: "Пейзажи",
-        url: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=1200",
-        featured: true
-      }
-    ];
 
     const DEFAULT_CATEGORIES = ["Все", "Портреты", "Пейзажи", "Студийная", "Love Story"];
 
@@ -742,38 +727,11 @@
       // Зарегистрируйтесь на https://www.emailjs.com (бесплатный тариф),
       // подключите свою почту как "Email Service" и создайте "Email Template".
       publicKey: "6ScM6QR-sRb9EMB2Q",
-      serviceId: "service_s74r9bs",
+      serviceId: "service_y2jhm0u",
       templateId: "template_e4dk9ql",
       // Куда именно слать письма (обычно совпадает с полем "To Email" в шаблоне EmailJS)
       toEmail: "arthelen75@gmail.com"
     };
-
-    const DEFAULT_PACKAGES = [
-      {
-        id: "express",
-        title: "Экспресс",
-        price: "5 000 ₽",
-        duration: "30 минут",
-        features: [
-          "Консультация в Telegram",
-          "15 фото в авторской ретуши",
-          "Все удачные кадры в цветокоррекции"
-        ],
-        popular: false
-      },
-      {
-        id: "standard",
-        title: "Прогулка / Студия",
-        price: "9 500 ₽",
-        duration: "1.5 часа",
-        features: [
-          "Помощь с подбором образов и мудборда",
-          "40 фото в детальной ретуши",
-          "До 150 исходников в цветокоррекции"
-        ],
-        popular: true
-      }
-    ];
 
     // --- CONFIG И ИНИЦИАЛИЗАЦИЯ FIREBASE ---
     // Устанавливаем надежный плоский appId без двоеточий во избежание ошибок разграничения Firestore путей
@@ -809,6 +767,7 @@
     let activeCategory = "Все";
     let activeTab = "gallery";
     let activeAdminTab = "requests";
+    let activeRequestFilter = "all"; // all | new | in_progress | done
     let isAdminAuthenticated = false;
     let pendingDeletePhotoId = null;
     let currentUser = null;
@@ -838,38 +797,6 @@
       }
     });
 
-    // --- ИНИЦИАЛИЗАЦИЯ И СИДИНГ БАЗЫ ДАННЫХ (ПРАВИЛО 1) ---
-    async function seedDatabase() {
-      if (!currentUser) return;
-      try {
-        showToast("Облачная база пуста. Инициализируем стандартные данные...", "info");
-        
-        // 1. Создаем конфиг профиля и категорий
-        const configRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'photographer');
-        await setDoc(configRef, {
-          ...DEFAULT_INFO,
-          categories: DEFAULT_CATEGORIES
-        });
-
-        // 2. Создаем стандартные тарифы
-        for (const pkg of DEFAULT_PACKAGES) {
-          await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'packages', pkg.id), pkg);
-        }
-
-        // 3. Создаем базовые фотографии
-        for (const photo of DEFAULT_PHOTOS) {
-          await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'photos', photo.id), photo);
-        }
-        
-        showToast("Облачная база успешно заполнена!");
-      } catch (error) {
-        console.error("Ошибка инициализации базы:", error);
-        if (error.code === 'permission-denied') {
-          showToast("Запрещено правилами Firebase! Опубликуйте Rules: allow read, write: if true;", "error");
-        }
-      }
-    }
-
     // --- РЕАЛТАЙМ СЛУШАТЕЛИ FIRESTORE (ПРАВИЛО 2) ---
     let unsubscribeConfig, unsubscribePhotos, unsubscribePackages, unsubscribeRequests;
 
@@ -880,7 +807,15 @@
       const configRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'photographer');
       unsubscribeConfig = onSnapshot(configRef, (docSnap) => {
         if (!docSnap.exists()) {
-          seedDatabase();
+          // Документ настроек еще не создан в облаке. Автозаполнение базы
+          // демо-данными отключено: просто показываем локальные значения
+          // по умолчанию в интерфейсе, ничего не записывая в Firestore.
+          // Реальные данные появятся в базе только после того, как
+          // администратор сохранит профиль/тарифы/фото через личный кабинет.
+          photographer = { ...DEFAULT_INFO };
+          categories = [ ...DEFAULT_CATEGORIES ];
+          syncStaticData();
+          renderAll();
           return;
         }
         const data = docSnap.data();
@@ -1896,23 +1831,65 @@
       return `<span class="text-[9px] font-bold uppercase px-2 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">Новая</span>`;
     }
 
+    // Список статусов для фильтра заявок: значение, подпись и функция подсчета
+    const REQUEST_FILTERS = [
+      { key: 'all', label: 'Все' },
+      { key: 'new', label: 'Новые' },
+      { key: 'in_progress', label: 'В работе' },
+      { key: 'done', label: 'Готовые' }
+    ];
+
+    function setRequestFilter(filterKey) {
+      activeRequestFilter = filterKey;
+      renderRequestFilters();
+      renderAdminRequests();
+    }
+
+    function renderRequestFilters() {
+      const container = document.getElementById('admin-requests-filters');
+      if (!container) return;
+      container.innerHTML = '';
+
+      REQUEST_FILTERS.forEach(f => {
+        const count = f.key === 'all' ? requests.length : requests.filter(r => r.status === f.key).length;
+        const isActive = activeRequestFilter === f.key;
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.onclick = () => setRequestFilter(f.key);
+        btn.className = `px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all border ${
+          isActive
+            ? "bg-amber-500 text-neutral-950 border-amber-500"
+            : "bg-neutral-950 text-neutral-400 border-neutral-800 hover:border-neutral-700 hover:text-white"
+        }`;
+        btn.innerText = `${f.label} (${count})`;
+        container.appendChild(btn);
+      });
+    }
+
     function renderAdminRequests() {
+      renderRequestFilters();
+
       const container = document.getElementById('admin-requests-list');
       if (!container) return;
       container.innerHTML = '';
 
-      if (requests.length === 0) {
+      const filteredRequests = activeRequestFilter === 'all'
+        ? requests
+        : requests.filter(r => r.status === activeRequestFilter);
+
+      if (filteredRequests.length === 0) {
         container.innerHTML = `
           <div class="text-center py-10 bg-neutral-950 rounded-xl border border-dashed border-neutral-800">
             <i data-lucide="inbox" class="w-6 h-6 text-neutral-700 mx-auto mb-2"></i>
-            <p class="text-xs text-neutral-500">Пока нет ни одной заявки</p>
+            <p class="text-xs text-neutral-500">${requests.length === 0 ? 'Пока нет ни одной заявки' : 'Нет заявок с этим статусом'}</p>
           </div>
         `;
         lucide.createIcons();
         return;
       }
 
-      requests.forEach(req => {
+      filteredRequests.forEach(req => {
         const item = document.createElement('div');
         item.className = "p-4 bg-neutral-950 border border-neutral-800 rounded-xl space-y-2.5";
         item.innerHTML = `
@@ -1992,6 +1969,7 @@
     window.saveProfile = saveProfile;
     window.setRequestStatus = setRequestStatus;
     window.deleteRequest = deleteRequest;
+    window.setRequestFilter = setRequestFilter;
   </script>
 </body>
 </html>
