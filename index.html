@@ -79,6 +79,13 @@
         <button onclick="navigateTo('contact')" id="mob-nav-contact" class="mob-nav-btn p-2 w-9 h-9 flex items-center justify-center rounded-lg text-neutral-400 hover:text-white transition-colors focus:outline-none" title="Запись">
           <i data-lucide="calendar" class="w-5 h-5"></i>
         </button>
+        <button onclick="navigateTo('chat')" id="mob-nav-chat" class="mob-nav-btn relative p-2 w-9 h-9 flex items-center justify-center rounded-lg text-neutral-400 hover:text-white transition-colors focus:outline-none" title="Чат">
+          <i data-lucide="message-circle" class="w-5 h-5"></i>
+          <span id="mob-chat-unread-dot" class="hidden absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-500"></span>
+        </button>
+        <button onclick="openAuthModal()" id="mob-nav-account" class="p-2 w-9 h-9 flex items-center justify-center rounded-lg text-neutral-400 hover:text-white transition-colors focus:outline-none" title="Личный кабинет">
+          <i data-lucide="user-circle" class="w-5 h-5"></i>
+        </button>
       </div>
 
       <!-- Десктопная навигация -->
@@ -87,6 +94,14 @@
         <button onclick="navigateTo('prices')" id="nav-prices" class="nav-link text-xs font-semibold tracking-wider uppercase transition-colors text-neutral-300 hover:text-amber-400">Цены</button>
         <button onclick="navigateTo('about')" id="nav-about" class="nav-link text-xs font-semibold tracking-wider uppercase transition-colors text-neutral-300 hover:text-amber-400">Обо мне</button>
         <button onclick="navigateTo('contact')" id="nav-contact" class="nav-link text-xs font-semibold tracking-wider uppercase transition-colors text-neutral-300 hover:text-amber-400">Запись</button>
+        <button onclick="navigateTo('chat')" id="nav-chat" class="nav-link relative text-xs font-semibold tracking-wider uppercase transition-colors text-neutral-300 hover:text-amber-400">
+          Чат
+          <span id="chat-unread-dot" class="hidden absolute -top-1.5 -right-2.5 w-2 h-2 rounded-full bg-amber-500"></span>
+        </button>
+        <button onclick="openAuthModal()" id="header-account-btn" class="flex items-center gap-1.5 pl-3 border-l border-neutral-800 text-xs font-semibold tracking-wider uppercase transition-colors text-neutral-300 hover:text-amber-400">
+          <i data-lucide="user-circle" class="w-4 h-4"></i>
+          <span id="header-account-label">Войти</span>
+        </button>
       </nav>
     </div>
   </header>
@@ -193,12 +208,15 @@
 
           <div class="p-5 rounded-2xl bg-neutral-900 border border-neutral-850 space-y-3">
             <span class="text-xs text-neutral-400 block font-semibold mb-1">Где еще меня найти:</span>
-            <div class="grid grid-cols-2 gap-2">
-              <a id="contact-tg" href="" target="_blank" class="px-3 py-2 rounded-xl bg-neutral-950 hover:bg-neutral-850 border border-neutral-800 text-xs text-white font-bold flex items-center justify-center gap-2 transition-all">
-                <i data-lucide="send" class="w-4 h-4 text-blue-400"></i> Telegram
+            <div class="grid grid-cols-3 gap-2">
+              <a id="contact-tg" href="" target="_blank" class="px-2.5 py-2 rounded-xl bg-neutral-950 hover:bg-neutral-850 border border-neutral-800 text-[11px] sm:text-xs text-white font-bold flex items-center justify-center gap-1.5 transition-all">
+                <i data-lucide="send" class="w-4 h-4 text-blue-400 shrink-0"></i> Telegram
               </a>
-              <a id="contact-ig" href="" target="_blank" class="px-3 py-2 rounded-xl bg-neutral-950 hover:bg-neutral-850 border border-neutral-800 text-xs text-white font-bold flex items-center justify-center gap-2 transition-all">
-                <i data-lucide="instagram" class="w-4 h-4 text-pink-500"></i> Instagram
+              <a id="contact-ig" href="" target="_blank" class="px-2.5 py-2 rounded-xl bg-neutral-950 hover:bg-neutral-850 border border-neutral-800 text-[11px] sm:text-xs text-white font-bold flex items-center justify-center gap-1.5 transition-all">
+                <i data-lucide="instagram" class="w-4 h-4 text-pink-500 shrink-0"></i> Instagram
+              </a>
+              <a id="contact-vk" href="" target="_blank" class="px-2.5 py-2 rounded-xl bg-neutral-950 hover:bg-neutral-850 border border-neutral-800 text-[11px] sm:text-xs text-white font-bold flex items-center justify-center gap-1.5 transition-all">
+                <i data-lucide="square-user-round" class="w-4 h-4 text-blue-500 shrink-0"></i> VK
               </a>
             </div>
           </div>
@@ -245,6 +263,53 @@
             <button type="submit" class="w-full py-3.5 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold rounded-xl transition-all shadow-md shadow-amber-500/10 uppercase tracking-widest text-xs">Отправить предложение Елене</button>
           </form>
         </div>
+      </div>
+    </section>
+
+    <!-- ЧАТ С ФОТОГРАФОМ (только для зарегистрированных пользователей) -->
+    <section id="tab-chat" class="tab-content py-2 hidden fade-in">
+      <div class="text-center max-w-lg mx-auto mb-4">
+        <span class="text-xs font-bold text-amber-400 uppercase tracking-widest">Личный чат</span>
+        <h2 class="text-3xl font-extrabold text-white mt-1">Общение с фотографом</h2>
+        <p class="text-xs text-neutral-400 mt-2">Доступно только зарегистрированным пользователям. Регистрация не обязательна для записи на съемку — она нужна только для чата.</p>
+      </div>
+
+      <!-- Плашка для незарегистрированных/неавторизованных гостей -->
+      <div id="chat-guest-prompt" class="max-w-md mx-auto bg-neutral-900 border border-neutral-850 rounded-3xl p-8 text-center space-y-4">
+        <div class="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-400 mx-auto">
+          <i data-lucide="message-circle" class="w-6 h-6"></i>
+        </div>
+        <h3 class="text-lg font-bold text-white">Войдите, чтобы открыть чат</h3>
+        <p class="text-xs text-neutral-400">Создайте бесплатный аккаунт или войдите, если он у вас уже есть — и сможете написать Елене напрямую.</p>
+        <div class="flex flex-col sm:flex-row gap-3 pt-2">
+          <button onclick="openAuthModal('register')" class="flex-1 py-3 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold rounded-xl text-xs uppercase tracking-wider transition-all">Зарегистрироваться</button>
+          <button onclick="openAuthModal('login')" class="flex-1 py-3 bg-neutral-950 border border-neutral-800 hover:border-neutral-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition-all">Войти</button>
+        </div>
+      </div>
+
+      <!-- Окно чата для авторизованных пользователей -->
+      <div id="chat-window" class="hidden max-w-2xl mx-auto bg-neutral-900 border border-neutral-850 rounded-3xl flex flex-col overflow-hidden" style="height: 60vh; min-height: 380px;">
+        <div class="flex items-center justify-between gap-2 px-5 py-3.5 border-b border-neutral-850 bg-neutral-950/40">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <div class="w-8 h-8 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0">
+              <i data-lucide="camera" class="w-4 h-4"></i>
+            </div>
+            <div class="min-w-0">
+              <p id="chat-header-name" class="text-xs font-bold text-white truncate"></p>
+              <p class="text-[10px] text-neutral-500">Обычно отвечает в течение пары часов</p>
+            </div>
+          </div>
+          <button onclick="logoutUser()" class="shrink-0 text-[10px] text-neutral-500 hover:text-red-400 font-bold uppercase tracking-wide transition-colors">Выйти</button>
+        </div>
+        <div id="chat-messages" class="flex-1 overflow-y-auto px-4 py-4 space-y-2.5">
+          <!-- Рендерится динамически -->
+        </div>
+        <form onsubmit="sendUserMessage(event)" class="flex items-center gap-2 p-3 border-t border-neutral-850">
+          <input id="chat-input" type="text" required placeholder="Напишите сообщение..." class="flex-1 bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none transition-colors">
+          <button type="submit" class="w-10 h-10 shrink-0 rounded-xl bg-amber-500 hover:bg-amber-400 text-neutral-950 flex items-center justify-center transition-all">
+            <i data-lucide="send" class="w-4 h-4"></i>
+          </button>
+        </form>
       </div>
     </section>
 
@@ -301,6 +366,10 @@
           </button>
           <button onclick="switchAdminTab('profile')" id="admin-tab-btn-profile" class="px-4 py-3 text-xs sm:text-sm font-bold whitespace-nowrap border-b-2 border-transparent text-neutral-400 hover:text-white transition-all focus:outline-none flex items-center gap-2">
             <i data-lucide="user" class="w-4 h-4"></i> О себе
+          </button>
+          <button onclick="switchAdminTab('chats')" id="admin-tab-btn-chats" class="px-4 py-3 text-xs sm:text-sm font-bold whitespace-nowrap border-b-2 border-transparent text-neutral-400 hover:text-white transition-all focus:outline-none flex items-center gap-2">
+            <i data-lucide="message-circle" class="w-4 h-4"></i> Чаты
+            <span id="chats-unread-badge" class="hidden ml-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[9px] font-extrabold items-center justify-center">0</span>
           </button>
         </div>
 
@@ -483,7 +552,7 @@
                 </div>
               </div>
 
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <div>
                   <label class="block text-[10px] text-neutral-400 font-bold mb-1">Telegram (username)</label>
                   <input id="admin-prof-tg" type="text" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
@@ -491,6 +560,10 @@
                 <div>
                   <label class="block text-[10px] text-neutral-400 font-bold mb-1">Instagram (username)</label>
                   <input id="admin-prof-ig" type="text" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-[10px] text-neutral-400 font-bold mb-1">ВКонтакте (короткое имя/id)</label>
+                  <input id="admin-prof-vk" type="text" placeholder="Например: id123456 или club123" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
                 </div>
                 <div>
                   <label class="block text-[10px] text-neutral-400 font-bold mb-1">Аватар (ссылка на портрет)</label>
@@ -502,6 +575,47 @@
                 <i data-lucide="check" class="w-3.5 h-3.5"></i> Сохранить изменения профиля
               </button>
             </form>
+          </div>
+        </div>
+
+        <!-- ВКЛАДКА 5: ЧАТЫ С ЗАРЕГИСТРИРОВАННЫМИ ПОЛЬЗОВАТЕЛЯМИ -->
+        <div id="admin-panel-chats" class="admin-pane-content hidden">
+          <div class="bg-neutral-900 border border-neutral-850 rounded-xl overflow-hidden grid grid-cols-1 md:grid-cols-5" style="min-height: 480px;">
+            <!-- Список диалогов -->
+            <div class="md:col-span-2 border-b md:border-b-0 md:border-r border-neutral-850 flex flex-col max-h-[480px]">
+              <div class="p-4 border-b border-neutral-850">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                  <i data-lucide="messages-square" class="w-4 h-4 text-amber-400"></i> Диалоги
+                </h3>
+              </div>
+              <div id="admin-chats-list" class="flex-1 overflow-y-auto">
+                <!-- Рендерится динамически -->
+              </div>
+            </div>
+            <!-- Переписка -->
+            <div class="md:col-span-3 flex flex-col">
+              <div id="admin-chat-empty" class="flex-1 flex flex-col items-center justify-center text-center p-8 gap-2">
+                <i data-lucide="mail-open" class="w-8 h-8 text-neutral-700"></i>
+                <p class="text-xs text-neutral-500">Выберите диалог слева, чтобы посмотреть переписку</p>
+              </div>
+              <div id="admin-chat-active" class="hidden flex-1 flex flex-col">
+                <div class="p-4 border-b border-neutral-850 flex items-center justify-between gap-2">
+                  <div class="min-w-0">
+                    <p id="admin-chat-active-name" class="text-xs font-bold text-white truncate"></p>
+                    <p id="admin-chat-active-email" class="text-[10px] text-neutral-500 truncate"></p>
+                  </div>
+                </div>
+                <div id="admin-chat-messages" class="flex-1 overflow-y-auto px-4 py-4 space-y-2.5 max-h-[340px]">
+                  <!-- Рендерится динамически -->
+                </div>
+                <form onsubmit="sendAdminMessage(event)" class="flex items-center gap-2 p-3 border-t border-neutral-850">
+                  <input id="admin-chat-input" type="text" required placeholder="Ответить пользователю..." class="flex-1 bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none transition-colors">
+                  <button type="submit" class="w-10 h-10 shrink-0 rounded-xl bg-amber-500 hover:bg-amber-400 text-neutral-950 flex items-center justify-center transition-all">
+                    <i data-lucide="send" class="w-4 h-4"></i>
+                  </button>
+                </form>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -528,6 +642,9 @@
         </a>
         <a id="footer-tg" href="" target="_blank" class="w-8 h-8 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-neutral-400 hover:text-blue-400 transition-colors">
           <i data-lucide="send" class="w-4 h-4"></i>
+        </a>
+        <a id="footer-vk" href="" target="_blank" class="w-8 h-8 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-neutral-400 hover:text-blue-500 transition-colors">
+          <i data-lucide="square-user-round" class="w-4 h-4"></i>
         </a>
       </div>
     </div>
@@ -700,12 +817,67 @@
     </div>
   </div>
 
+  <!-- --- МОДАЛЬНОЕ ОКНО: РЕГИСТРАЦИЯ / ВХОД ПОЛЬЗОВАТЕЛЯ --- -->
+  <div id="auth-modal" class="fixed inset-0 z-50 bg-neutral-950/95 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-neutral-900 border border-neutral-850 rounded-3xl p-6 sm:p-8 max-w-sm w-full relative">
+      <button onclick="closeAuthModal()" class="absolute top-4 right-4 p-1.5 rounded-full bg-neutral-950 text-neutral-400 hover:text-white border border-neutral-800 transition-colors">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <!-- Залогиненное состояние -->
+      <div id="auth-modal-logged-in" class="hidden text-center space-y-4">
+        <div class="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-400 mx-auto">
+          <i data-lucide="user-check" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h2 class="text-lg font-extrabold text-white">Вы в системе</h2>
+          <p id="auth-modal-user-info" class="text-xs text-neutral-400 mt-1"></p>
+        </div>
+        <div class="flex flex-col gap-2 pt-2">
+          <button onclick="closeAuthModal(); navigateTo('chat');" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold rounded-xl text-xs transition-all">Перейти в чат</button>
+          <button onclick="logoutUser()" class="w-full py-2.5 rounded-xl border border-neutral-800 text-xs text-neutral-400 hover:text-white transition-all">Выйти из аккаунта</button>
+        </div>
+      </div>
+
+      <!-- Форма регистрации / входа -->
+      <div id="auth-modal-form-wrap">
+        <div class="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-400 mx-auto mb-4">
+          <i data-lucide="user-plus" class="w-6 h-6"></i>
+        </div>
+        <h2 id="auth-modal-title" class="text-xl font-extrabold text-white mb-1 text-center">Регистрация</h2>
+        <p class="text-xs text-neutral-400 mb-5 text-center">Нужна только для личного чата с фотографом. Записаться на съемку можно и без аккаунта.</p>
+
+        <div class="flex bg-neutral-950 border border-neutral-800 rounded-xl p-1 mb-5">
+          <button type="button" id="auth-tab-register" onclick="switchAuthMode('register')" class="flex-1 py-2 rounded-lg text-xs font-bold transition-all bg-amber-500 text-neutral-950">Регистрация</button>
+          <button type="button" id="auth-tab-login" onclick="switchAuthMode('login')" class="flex-1 py-2 rounded-lg text-xs font-bold transition-all text-neutral-400 hover:text-white">Вход</button>
+        </div>
+
+        <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-3">
+          <div id="auth-name-field">
+            <label class="block text-[10px] text-neutral-400 font-bold mb-1.5 uppercase tracking-wider">Ваше имя</label>
+            <input id="auth-name-input" type="text" placeholder="Как к вам обращаться" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-[10px] text-neutral-400 font-bold mb-1.5 uppercase tracking-wider">Email</label>
+            <input id="auth-email-input" type="email" required placeholder="you@example.com" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-[10px] text-neutral-400 font-bold mb-1.5 uppercase tracking-wider">Пароль</label>
+            <input id="auth-password-input" type="password" required minlength="6" placeholder="Минимум 6 символов" class="w-full bg-neutral-950 border border-neutral-800 focus:border-amber-500 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none">
+          </div>
+          <p id="auth-error" class="text-xs text-red-400 hidden"></p>
+          <button id="auth-submit-btn" type="submit" class="w-full py-3 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold rounded-xl text-xs uppercase tracking-wider transition-all">Создать аккаунт</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- --- ОБЛАЧНЫЙ ДВИЖОК И БИЗНЕС-ЛОГИКА НА FIRESTORE --- -->
   <script type="module">
     // Импорт необходимых модулей Firebase SDK
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
-    import { getAuth, signInAnonymously, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
-    import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, onSnapshot, addDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+    import { getAuth, signInAnonymously, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, onSnapshot, addDoc, deleteDoc, query, orderBy } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
     // --- ДЕФОЛТНЫЕ ДАННЫЕ (используются ТОЛЬКО как значения по умолчанию
     // в интерфейсе, если в базе еще нет документа с настройками профиля.
@@ -720,6 +892,7 @@
       phone: "+7 (912) 854-96-63",
       telegram: "arthelen_photo",
       instagram: "helen.martynova.ph",
+      vk: "",
       pricesLabel: "Тарифы",
       pricesTitle: "Стоимость фотосессий",
       pricesDesc: "Все цены прозрачны. Никаких скрытых доплат. Аренда фотостудии обсуждается отдельно."
@@ -789,6 +962,18 @@
     let pendingDeletePhotoId = null;
     let currentUser = null;
 
+    // --- СОСТОЯНИЕ РЕГИСТРАЦИИ ПОЛЬЗОВАТЕЛЕЙ И ЧАТА ---
+    let appUser = null;              // { uid, name, email } зарегистрированного и вошедшего пользователя
+    let isUserAuthenticated = false;
+    let authMode = 'register';       // 'register' | 'login'
+    let unsubscribeUserChat = null;  // слушатель сообщений собственного чата пользователя
+    let unsubscribeUserChatDoc = null; // слушатель самого документа чата (для бейджа непрочитанного)
+    let unsubscribeAdminChats = null;      // слушатель списка всех чатов (для админа)
+    let unsubscribeAdminChatMessages = null; // слушатель сообщений выбранного диалога (для админа)
+    let userChatMessages = [];
+    let adminChats = [];
+    let activeAdminChatUid = null;
+
     // Инициализация года в футере
     document.getElementById('current-year').innerText = new Date().getFullYear();
 
@@ -807,10 +992,29 @@
     initAuth();
 
     // Слушатель состояния авторизации
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
       currentUser = user;
       if (user) {
         setupRealtimeListeners();
+
+        // Если это НЕ анонимная сессия и мы еще не знаем, кто вошел (ни админ, ни
+        // пользователь) — пробуем восстановить сессию зарегистрированного пользователя
+        // (например, после перезагрузки страницы).
+        if (!user.isAnonymous && !isAdminAuthenticated && !isUserAuthenticated) {
+          try {
+            const userDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'site_users', user.uid);
+            const userSnap = await getDoc(userDocRef);
+            if (userSnap.exists()) {
+              const data = userSnap.data();
+              appUser = { uid: user.uid, name: data.name || '', email: data.email || user.email || '' };
+              isUserAuthenticated = true;
+              setupUserChatListener();
+              renderAuthUI();
+            }
+          } catch (err) {
+            console.error("Ошибка восстановления сессии пользователя:", err);
+          }
+        }
       }
     });
 
@@ -845,6 +1049,7 @@
           phone: data.phone || DEFAULT_INFO.phone,
           telegram: data.telegram || DEFAULT_INFO.telegram,
           instagram: data.instagram || DEFAULT_INFO.instagram,
+          vk: data.vk !== undefined ? data.vk : DEFAULT_INFO.vk,
           pricesLabel: data.pricesLabel !== undefined ? data.pricesLabel : DEFAULT_INFO.pricesLabel,
           pricesTitle: data.pricesTitle !== undefined ? data.pricesTitle : DEFAULT_INFO.pricesTitle,
           pricesDesc: data.pricesDesc !== undefined ? data.pricesDesc : DEFAULT_INFO.pricesDesc,
@@ -908,6 +1113,22 @@
           showToast("Ошибка чтения заявок: недостаточно прав (Rules: allow read, write: if true).", "error");
         }
       });
+
+      // Слушатель списка диалогов чата (по одному документу на каждого
+      // зарегистрированного пользователя, который хоть раз писал в чат).
+      // Подписываемся всегда, чтобы бейдж непрочитанных был актуален сразу после входа в админку.
+      const chatsRef = collection(db, 'artifacts', appId, 'public', 'data', 'chats');
+      unsubscribeAdminChats = onSnapshot(chatsRef, (querySnap) => {
+        const tempChats = [];
+        querySnap.forEach(docSnap => tempChats.push({ id: docSnap.id, ...docSnap.data() }));
+        adminChats = tempChats.sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''));
+        if (isAdminAuthenticated) {
+          renderAdminChatsList();
+          updateChatsBadge();
+        }
+      }, (error) => {
+        console.error("Ошибка потока чатов:", error);
+      });
     }
 
     // --- ОБНОВЛЕНИЕ СТАТИЧЕСКИХ ДАННЫХ В ВЕРСТКЕ ---
@@ -931,6 +1152,11 @@
       document.getElementById('contact-ig').href = `https://instagram.com/${photographer.instagram}`;
       document.getElementById('footer-tg').href = `https://t.me/${photographer.telegram}`;
       document.getElementById('footer-ig').href = `https://instagram.com/${photographer.instagram}`;
+
+      const vkUsername = (photographer.vk || '').trim();
+      const vkHref = vkUsername ? `https://vk.com/${vkUsername}` : 'https://vk.com';
+      document.getElementById('contact-vk').href = vkHref;
+      document.getElementById('footer-vk').href = vkHref;
 
       // Настройка заголовков тарифов
       const labelEl = document.getElementById('prices-label');
@@ -959,6 +1185,7 @@
       document.getElementById('admin-prof-phone').value = photographer.phone;
       document.getElementById('admin-prof-tg').value = photographer.telegram;
       document.getElementById('admin-prof-ig').value = photographer.instagram;
+      document.getElementById('admin-prof-vk').value = photographer.vk || '';
       document.getElementById('admin-prof-avatar').value = photographer.aboutImage;
 
       document.getElementById('admin-prices-label').value = photographer.pricesLabel || '';
@@ -977,6 +1204,8 @@
         renderAdminPackages();
         renderAdminRequests();
         updateRequestsBadge();
+        renderAdminChatsList();
+        updateChatsBadge();
       }
       lucide.createIcons();
     }
@@ -1153,6 +1382,7 @@
         phone: document.getElementById('admin-prof-phone').value.trim(),
         telegram: document.getElementById('admin-prof-tg').value.trim(),
         instagram: document.getElementById('admin-prof-ig').value.trim(),
+        vk: document.getElementById('admin-prof-vk').value.trim(),
         aboutImage: document.getElementById('admin-prof-avatar').value.trim(),
         pricesLabel: photographer.pricesLabel || '',
         pricesTitle: photographer.pricesTitle || '',
@@ -1417,6 +1647,12 @@
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
       renderAll();
+      renderAuthUI();
+
+      // При открытии чата отмечаем сообщения фотографа как прочитанные
+      if (tab === 'chat' && isUserAuthenticated && appUser) {
+        setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'chats', appUser.uid), { unreadByUser: false }, { merge: true }).catch(() => {});
+      }
     }
 
     function openLightbox(photo) {
@@ -1583,6 +1819,14 @@
         // Реальная проверка учетных данных через Firebase Authentication
         await signInWithEmailAndPassword(auth, email, password);
 
+        // Если до этого в этой же вкладке был вход как обычный пользователь — сбрасываем его сессию чата
+        if (isUserAuthenticated) {
+          isUserAuthenticated = false;
+          appUser = null;
+          if (unsubscribeUserChat) { unsubscribeUserChat(); unsubscribeUserChat = null; }
+          renderAuthUI();
+        }
+
         isAdminAuthenticated = true;
         document.getElementById('admin-auth-card').classList.add('hidden');
         document.getElementById('admin-dashboard').classList.remove('hidden');
@@ -1602,6 +1846,8 @@
 
     async function adminLogout() {
       isAdminAuthenticated = false;
+      activeAdminChatUid = null;
+      if (unsubscribeAdminChatMessages) { unsubscribeAdminChatMessages(); unsubscribeAdminChatMessages = null; }
       document.getElementById('admin-password-input').value = '';
       document.getElementById('admin-auth-card').classList.remove('hidden');
       document.getElementById('admin-dashboard').classList.add('hidden');
@@ -1617,6 +1863,365 @@
 
       showToast("Вы вышли из системы управления");
       renderAll();
+    }
+
+    // ============================================================
+    // РЕГИСТРАЦИЯ / ВХОД ОБЫЧНЫХ ПОЛЬЗОВАТЕЛЕЙ И ЧАТ С ФОТОГРАФОМ
+    // ============================================================
+
+    // Обновляет кнопку в шапке сайта и переключает "гостевую" плашку / окно чата
+    function renderAuthUI() {
+      const label = document.getElementById('header-account-label');
+      const accountBtn = document.getElementById('header-account-btn');
+      if (isUserAuthenticated && appUser) {
+        if (label) label.innerText = appUser.name || appUser.email || 'Профиль';
+        if (accountBtn) accountBtn.classList.add('text-amber-400');
+      } else {
+        if (label) label.innerText = 'Войти';
+        if (accountBtn) accountBtn.classList.remove('text-amber-400');
+      }
+
+      const guestPrompt = document.getElementById('chat-guest-prompt');
+      const chatWindow = document.getElementById('chat-window');
+      if (guestPrompt && chatWindow) {
+        guestPrompt.classList.toggle('hidden', isUserAuthenticated);
+        chatWindow.classList.toggle('hidden', !isUserAuthenticated);
+      }
+
+      const chatHeaderName = document.getElementById('chat-header-name');
+      if (chatHeaderName) {
+        chatHeaderName.innerText = `Чат с ${photographer.name}`;
+      }
+      lucide.createIcons();
+    }
+
+    function openAuthModal(mode) {
+      const loggedInBlock = document.getElementById('auth-modal-logged-in');
+      const formBlock = document.getElementById('auth-modal-form-wrap');
+      if (isUserAuthenticated && appUser) {
+        loggedInBlock.classList.remove('hidden');
+        formBlock.classList.add('hidden');
+        document.getElementById('auth-modal-user-info').innerText = appUser.name
+          ? `${appUser.name} · ${appUser.email}`
+          : (appUser.email || '');
+      } else {
+        loggedInBlock.classList.add('hidden');
+        formBlock.classList.remove('hidden');
+        switchAuthMode(mode || 'register');
+      }
+      document.getElementById('auth-error').classList.add('hidden');
+      document.getElementById('auth-modal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeAuthModal() {
+      document.getElementById('auth-modal').classList.add('hidden');
+    }
+
+    function switchAuthMode(mode) {
+      authMode = mode;
+      const isRegister = mode === 'register';
+      document.getElementById('auth-tab-register').className = `flex-1 py-2 rounded-lg text-xs font-bold transition-all ${isRegister ? 'bg-amber-500 text-neutral-950' : 'text-neutral-400 hover:text-white'}`;
+      document.getElementById('auth-tab-login').className = `flex-1 py-2 rounded-lg text-xs font-bold transition-all ${!isRegister ? 'bg-amber-500 text-neutral-950' : 'text-neutral-400 hover:text-white'}`;
+      document.getElementById('auth-modal-title').innerText = isRegister ? 'Регистрация' : 'Вход';
+      document.getElementById('auth-name-field').classList.toggle('hidden', !isRegister);
+      document.getElementById('auth-submit-btn').innerText = isRegister ? 'Создать аккаунт' : 'Войти';
+      document.getElementById('auth-error').classList.add('hidden');
+    }
+
+    async function handleAuthSubmit(event) {
+      event.preventDefault();
+      const email = document.getElementById('auth-email-input').value.trim();
+      const password = document.getElementById('auth-password-input').value;
+      const name = document.getElementById('auth-name-input').value.trim();
+      const errorEl = document.getElementById('auth-error');
+      const submitBtn = document.getElementById('auth-submit-btn');
+
+      errorEl.classList.add('hidden');
+      submitBtn.disabled = true;
+      const originalText = submitBtn.innerText;
+      submitBtn.innerText = "Подождите...";
+
+      try {
+        let userCredential;
+        if (authMode === 'register') {
+          userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          const uid = userCredential.user.uid;
+          const profile = { name: name || 'Гость', email, createdAt: new Date().toISOString() };
+          await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'site_users', uid), profile);
+          appUser = { uid, name: profile.name, email };
+        } else {
+          userCredential = await signInWithEmailAndPassword(auth, email, password);
+          const uid = userCredential.user.uid;
+          const userSnap = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'site_users', uid));
+          const data = userSnap.exists() ? userSnap.data() : {};
+          appUser = { uid, name: data.name || '', email: data.email || email };
+        }
+
+        // Если ранее в этой вкладке была открыта админка — закрываем ее сессию
+        if (isAdminAuthenticated) {
+          isAdminAuthenticated = false;
+          activeAdminChatUid = null;
+          if (unsubscribeAdminChatMessages) { unsubscribeAdminChatMessages(); unsubscribeAdminChatMessages = null; }
+          document.getElementById('admin-dashboard').classList.add('hidden');
+          document.getElementById('admin-auth-card').classList.remove('hidden');
+        }
+
+        isUserAuthenticated = true;
+        document.getElementById('auth-email-input').value = '';
+        document.getElementById('auth-password-input').value = '';
+        document.getElementById('auth-name-input').value = '';
+
+        setupUserChatListener();
+        renderAuthUI();
+        closeAuthModal();
+        showToast(authMode === 'register' ? "Регистрация прошла успешно!" : "Вы вошли в аккаунт!", "success");
+        navigateTo('chat');
+      } catch (err) {
+        console.error("Ошибка аутентификации пользователя:", err);
+        let msg = "Не удалось выполнить запрос. Проверьте данные и попробуйте снова.";
+        if (err.code === 'auth/email-already-in-use') msg = "Этот email уже зарегистрирован. Попробуйте войти.";
+        else if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') msg = "Неверный email или пароль.";
+        else if (err.code === 'auth/weak-password') msg = "Пароль слишком короткий (минимум 6 символов).";
+        else if (err.code === 'auth/invalid-email') msg = "Некорректный email.";
+        errorEl.innerText = msg;
+        errorEl.classList.remove('hidden');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = originalText;
+      }
+    }
+
+    async function logoutUser() {
+      if (unsubscribeUserChat) { unsubscribeUserChat(); unsubscribeUserChat = null; }
+      if (unsubscribeUserChatDoc) { unsubscribeUserChatDoc(); unsubscribeUserChatDoc = null; }
+      appUser = null;
+      isUserAuthenticated = false;
+      userChatMessages = [];
+      toggleChatUnreadDot(false);
+
+      try {
+        await signOut(auth);
+        await signInAnonymously(auth);
+      } catch (err) {
+        console.error("Ошибка выхода пользователя:", err);
+      }
+
+      renderAuthUI();
+      closeAuthModal();
+      if (activeTab === 'chat') {
+        navigateTo('chat');
+      }
+      showToast("Вы вышли из аккаунта");
+    }
+
+    function toggleChatUnreadDot(show) {
+      ['chat-unread-dot', 'mob-chat-unread-dot'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle('hidden', !show);
+      });
+    }
+
+    // --- ЧАТ СО СТОРОНЫ ПОЛЬЗОВАТЕЛЯ ---
+    function setupUserChatListener() {
+      if (!appUser) return;
+      if (unsubscribeUserChat) unsubscribeUserChat();
+      if (unsubscribeUserChatDoc) unsubscribeUserChatDoc();
+
+      const chatDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'chats', appUser.uid);
+
+      // Следим за самим документом диалога, чтобы показывать точку "есть новое сообщение"
+      unsubscribeUserChatDoc = onSnapshot(chatDocRef, (docSnap) => {
+        const hasUnread = docSnap.exists() && !!docSnap.data().unreadByUser;
+        toggleChatUnreadDot(hasUnread && activeTab !== 'chat');
+      }, (error) => {
+        console.error("Ошибка потока документа чата:", error);
+      });
+
+      const messagesRef = collection(db, 'artifacts', appId, 'public', 'data', 'chats', appUser.uid, 'messages');
+      const messagesQuery = query(messagesRef, orderBy('createdAt', 'asc'));
+      unsubscribeUserChat = onSnapshot(messagesQuery, (querySnap) => {
+        userChatMessages = [];
+        querySnap.forEach(docSnap => userChatMessages.push({ id: docSnap.id, ...docSnap.data() }));
+        renderUserChatMessages();
+        if (activeTab === 'chat' && userChatMessages.length > 0) {
+          setDoc(chatDocRef, { unreadByUser: false }, { merge: true }).catch(() => {});
+        }
+      }, (error) => {
+        console.error("Ошибка потока сообщений чата:", error);
+      });
+    }
+
+    function renderUserChatMessages() {
+      const container = document.getElementById('chat-messages');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (userChatMessages.length === 0) {
+        container.innerHTML = `
+          <div class="h-full flex flex-col items-center justify-center text-center gap-2 py-10">
+            <i data-lucide="sparkles" class="w-6 h-6 text-neutral-700"></i>
+            <p class="text-xs text-neutral-500">Напишите первое сообщение — и Елена вам ответит!</p>
+          </div>`;
+        lucide.createIcons();
+        return;
+      }
+
+      userChatMessages.forEach(msg => {
+        const isMine = msg.sender === 'user';
+        const bubble = document.createElement('div');
+        bubble.className = `max-w-[80%] px-3.5 py-2.5 rounded-2xl text-xs leading-relaxed whitespace-pre-line ${
+          isMine
+            ? 'ml-auto bg-amber-500 text-neutral-950 rounded-br-sm'
+            : 'mr-auto bg-neutral-950 border border-neutral-800 text-neutral-200 rounded-bl-sm'
+        }`;
+        bubble.innerText = msg.text || '';
+        container.appendChild(bubble);
+      });
+      container.scrollTop = container.scrollHeight;
+    }
+
+    async function sendUserMessage(event) {
+      event.preventDefault();
+      if (!appUser) return;
+      const input = document.getElementById('chat-input');
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+
+      try {
+        const chatDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'chats', appUser.uid);
+        await setDoc(chatDocRef, {
+          userName: appUser.name || '',
+          userEmail: appUser.email || '',
+          lastMessage: text,
+          updatedAt: new Date().toISOString(),
+          unreadByAdmin: true,
+          unreadByUser: false
+        }, { merge: true });
+
+        const messagesRef = collection(db, 'artifacts', appId, 'public', 'data', 'chats', appUser.uid, 'messages');
+        await addDoc(messagesRef, { sender: 'user', text, createdAt: new Date().toISOString() });
+      } catch (error) {
+        console.error("Ошибка отправки сообщения:", error);
+        showToast("Не удалось отправить сообщение", "error");
+        input.value = text;
+      }
+    }
+
+    // --- ЧАТ СО СТОРОНЫ АДМИНА ---
+    function renderAdminChatsList() {
+      const container = document.getElementById('admin-chats-list');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (adminChats.length === 0) {
+        container.innerHTML = `
+          <div class="p-6 text-center">
+            <p class="text-xs text-neutral-500">Пока никто не написал в чат</p>
+          </div>`;
+        return;
+      }
+
+      adminChats.forEach(chat => {
+        const isActive = chat.id === activeAdminChatUid;
+        const item = document.createElement('button');
+        item.type = 'button';
+        item.onclick = () => openAdminChat(chat.id);
+        item.className = `w-full text-left px-4 py-3 border-b border-neutral-850 transition-colors flex items-center justify-between gap-2 ${isActive ? 'bg-neutral-850' : 'hover:bg-neutral-850/50'}`;
+        item.innerHTML = `
+          <div class="min-w-0">
+            <p class="text-xs font-bold text-white truncate">${chat.userName || 'Без имени'}</p>
+            <p class="text-[10px] text-neutral-500 truncate">${chat.lastMessage || ''}</p>
+          </div>
+          ${chat.unreadByAdmin ? '<span class="w-2 h-2 rounded-full bg-amber-500 shrink-0"></span>' : ''}
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function openAdminChat(uid) {
+      if (!isAdminAuthenticated) return;
+      activeAdminChatUid = uid;
+      const chat = adminChats.find(c => c.id === uid);
+
+      document.getElementById('admin-chat-empty').classList.add('hidden');
+      document.getElementById('admin-chat-active').classList.remove('hidden');
+      document.getElementById('admin-chat-active-name').innerText = chat?.userName || 'Без имени';
+      document.getElementById('admin-chat-active-email').innerText = chat?.userEmail || '';
+      renderAdminChatsList();
+
+      if (unsubscribeAdminChatMessages) unsubscribeAdminChatMessages();
+      const messagesRef = collection(db, 'artifacts', appId, 'public', 'data', 'chats', uid, 'messages');
+      const messagesQuery = query(messagesRef, orderBy('createdAt', 'asc'));
+      unsubscribeAdminChatMessages = onSnapshot(messagesQuery, (querySnap) => {
+        const msgs = [];
+        querySnap.forEach(docSnap => msgs.push({ id: docSnap.id, ...docSnap.data() }));
+        renderAdminChatMessages(msgs);
+      }, (error) => {
+        console.error("Ошибка потока сообщений диалога:", error);
+      });
+
+      setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'chats', uid), { unreadByAdmin: false }, { merge: true }).catch(() => {});
+    }
+
+    function renderAdminChatMessages(msgs) {
+      const container = document.getElementById('admin-chat-messages');
+      if (!container) return;
+      container.innerHTML = '';
+
+      msgs.forEach(msg => {
+        const isAdminMsg = msg.sender === 'admin';
+        const bubble = document.createElement('div');
+        bubble.className = `max-w-[80%] px-3.5 py-2.5 rounded-2xl text-xs leading-relaxed whitespace-pre-line ${
+          isAdminMsg
+            ? 'ml-auto bg-amber-500 text-neutral-950 rounded-br-sm'
+            : 'mr-auto bg-neutral-950 border border-neutral-800 text-neutral-200 rounded-bl-sm'
+        }`;
+        bubble.innerText = msg.text || '';
+        container.appendChild(bubble);
+      });
+      container.scrollTop = container.scrollHeight;
+    }
+
+    async function sendAdminMessage(event) {
+      event.preventDefault();
+      if (!activeAdminChatUid || !currentUser) return;
+      const input = document.getElementById('admin-chat-input');
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+
+      try {
+        const chatDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'chats', activeAdminChatUid);
+        await setDoc(chatDocRef, {
+          lastMessage: text,
+          updatedAt: new Date().toISOString(),
+          unreadByUser: true,
+          unreadByAdmin: false
+        }, { merge: true });
+
+        const messagesRef = collection(db, 'artifacts', appId, 'public', 'data', 'chats', activeAdminChatUid, 'messages');
+        await addDoc(messagesRef, { sender: 'admin', text, createdAt: new Date().toISOString() });
+      } catch (error) {
+        console.error("Ошибка отправки ответа:", error);
+        showToast("Не удалось отправить сообщение", "error");
+        input.value = text;
+      }
+    }
+
+    function updateChatsBadge() {
+      const badge = document.getElementById('chats-unread-badge');
+      if (!badge) return;
+      const count = adminChats.filter(c => c.unreadByAdmin).length;
+      if (count > 0) {
+        badge.innerText = count > 9 ? '9+' : String(count);
+        badge.classList.remove('hidden');
+        badge.classList.add('flex');
+      } else {
+        badge.classList.add('hidden');
+        badge.classList.remove('flex');
+      }
     }
 
     function switchAdminTab(adminTabId) {
@@ -2060,6 +2665,14 @@
     window.setRequestStatus = setRequestStatus;
     window.deleteRequest = deleteRequest;
     window.setRequestFilter = setRequestFilter;
+    window.openAuthModal = openAuthModal;
+    window.closeAuthModal = closeAuthModal;
+    window.switchAuthMode = switchAuthMode;
+    window.handleAuthSubmit = handleAuthSubmit;
+    window.logoutUser = logoutUser;
+    window.sendUserMessage = sendUserMessage;
+    window.sendAdminMessage = sendAdminMessage;
+    window.openAdminChat = openAdminChat;
   </script>
 </body>
 </html>
